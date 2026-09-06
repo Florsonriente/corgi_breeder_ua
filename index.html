@@ -98,7 +98,7 @@
     font-weight:100; font-size:13px; letter-spacing:var(--text-accent-caps-ls); text-transform:uppercase;
     font-family:var(--font-body); border:1px solid var(--ink); cursor:pointer;
     transition:background .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
-    white-space:nowrap;
+    white-space:nowrap; min-width:150px; justify-content:center;
   }
   .btn:hover{background:var(--raspberry); border-color:var(--raspberry); transform:translateY(-2px);}
   .btn-accent{background:var(--raspberry); border-color:var(--raspberry);}
@@ -272,17 +272,88 @@
   .scatter-heading{position:relative; display:inline-block;}
   .scatter-heading .line{display:block;}
   .scatter-heading .bang{color:var(--ink);}
+
+  /* ================= INTERACTIVE LETTERS ================= */
+  @property --chy { syntax:'<length>'; inherits:false; initial-value:0px; }
+  @property --chr { syntax:'<angle>'; inherits:false; initial-value:0deg; }
+  @property --chs { syntax:'<number>'; inherits:false; initial-value:1; }
+
+  .scatter-heading .ch{
+    --chy:0px; --chr:0deg; --chs:1;
+    display:inline-block;
+    will-change:transform;
+    transform:translate3d(0,var(--chy),0) rotate(var(--chr)) scale(var(--chs));
+    transition:
+      --chy .45s cubic-bezier(.22,1,.36,1),
+      --chr .45s cubic-bezier(.22,1,.36,1),
+      --chs .45s cubic-bezier(.22,1,.36,1);
+  }
+  .scatter-heading .ch.space{width:.28em;}
+
+  @media (prefers-reduced-motion: reduce){
+    .scatter-heading .ch{transition:none;transform:none;}
+  }
+
+  /* ================= DECORATIVE ICONS: POP · FLOAT · PSEUDO-3D TILT ================= */
+  @property --sc { syntax:'<number>'; inherits:false; initial-value:1; }
+  @property --fy { syntax:'<length>'; inherits:false; initial-value:0px; }
+  @property --rx { syntax:'<angle>'; inherits:false; initial-value:0deg; }
+  @property --ry { syntax:'<angle>'; inherits:false; initial-value:0deg; }
+
+  .scatter-heading{position:relative; display:inline-block; perspective:900px;}
   .scatter-el{
+    --rot:0deg; --sc:1; --fy:0px; --rx:0deg; --ry:0deg;
     position:absolute; object-fit:contain;
     filter:drop-shadow(0 10px 16px rgba(60,29,9,.3));
     pointer-events:none;
+    transform:
+      translate3d(
+        calc(var(--hx, 0px) + var(--sx, 0px)),
+        calc(var(--fy) + var(--hy, 0px) + var(--sy, 0px)),
+        0
+      )
+      rotateX(var(--rx)) rotateY(var(--ry))
+      rotate(calc(var(--rot) + var(--hr, 0deg) + var(--scroll-rotate, 0deg)))
+      scale(calc(var(--sc) * var(--hs, 1) * var(--scroll-scale, 1)));
+    transform-style:preserve-3d;
+    will-change:transform;
+    opacity:0;
+    transition:
+      --rx .25s ease-out, --ry .25s ease-out,
+      --hx .5s cubic-bezier(.22,1,.36,1), --hy .5s cubic-bezier(.22,1,.36,1),
+      --hr .5s cubic-bezier(.22,1,.36,1), --hs .5s cubic-bezier(.22,1,.36,1);
   }
-  .scatter-el.s1{width:18vw; max-width:200px; top:-6%; left:34%; transform:rotate(-8deg);}
-  .scatter-el.s2{width:18vw; max-width:208px; top:8%; right:6%; transform:rotate(7deg);}
-  .scatter-el.s3{width:14vw; max-width:160px; top:44%; left:-3%; transform:rotate(-12deg);}
-  .scatter-el.s4{width:17vw; max-width:200px; bottom:-5%; left:42%; transform:rotate(5deg);}
-  .scatter-el.s5{width:15vw; max-width:176px; bottom:-8%; right:20%; transform:rotate(-6deg);}
-  .scatter-el.s6{width:14vw; max-width:164px; bottom:-2%; left:7%; transform:rotate(-4deg); z-index:2;}
+  .scatter-el.s1{width:18vw; max-width:200px; top:-6%; left:34%;}
+  .scatter-el.s2{width:18vw; max-width:208px; top:8%; right:6%;}
+  .scatter-el.s3{width:14vw; max-width:160px; top:44%; left:-3%;}
+  .scatter-el.s5{width:15vw; max-width:176px; bottom:-8%; right:20%;}
+  .scatter-el.s6{width:14vw; max-width:164px; bottom:-2%; left:7%; z-index:2;}
+
+  @keyframes icon-pop{
+    0%   { --sc:.02; --fy:58px; opacity:0; }
+    28%  { --sc:1.42; --fy:-20px; opacity:1; }
+    52%  { --sc:.82; --fy:7px; opacity:1; }
+    72%  { --sc:1.16; --fy:-5px; opacity:1; }
+    100% { --sc:1; --fy:0px; opacity:1; }
+  }
+
+  @keyframes icon-float{
+    0%,100% { --fy:-10px; }
+    50%     { --fy:10px; }
+  }
+
+  .scatter-el.is-in{
+    opacity:1;
+    animation:
+      icon-pop .95s cubic-bezier(.34,1.56,.64,1) both,
+      icon-float var(--float-dur,6s) ease-in-out var(--float-delay,0s) infinite alternate;
+    animation-delay:var(--pop-delay,0s), calc(var(--pop-delay,0s) + .95s);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .scatter-el{opacity:1;}
+    .scatter-el.is-in{animation:none;}
+  }
   .puppies-sticky{position:sticky; top:-1px; margin-top:-2px; height:100vh; overflow:hidden; display:flex; align-items:flex-end;}
   .puppies-video-bg{position:absolute; inset:0; z-index:0; background:#F7D5D3;}
   .puppies-video-bg video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
@@ -291,7 +362,16 @@
   .pup-quad{flex:1 1 25%; height:100%; display:flex; align-items:flex-end; justify-content:center; padding-bottom:8%; cursor:pointer;}
   .pup-quad-btn{
     opacity:1;
+    min-width:150px;
+    box-sizing:border-box;
+    justify-content:center;
     transition:opacity .15s ease;
+  }
+  .pup-quad:hover .pup-quad-btn{
+    transform:none;
+  }
+  .pup-quad:hover .pup-quad-btn{
+    transform:none;
   }
   .puppies-sub-cluster{
     position:absolute; z-index:3; right:2.5vw; bottom:8%;
@@ -446,7 +526,7 @@
     .about-stats{justify-content:center;}
   }
 </style>
-</head><body><header><div class="header-inner"><nav><a href="#about">About</a><a href="#parents">Parents</a><a href="#litter">Puppies</a><a href="#reviews">Reviews</a></nav></div></header><!-- ================= HERO ================= --><section class="hero" id="hero"><div class="hero-video-bg" id="heroVideoBg"><video id="scrubVideo" muted playsinline autoplay preload="auto"><source src="assets/asset-a625f8a7036868a3.mp4" type="video/mp4"></video></div><div class="hero-top-row"><div class="eyebrow">PEMBROKE<br>WELSH CORGI<br>BREEDER.<span class="rule"></span></div><div class="eyebrow right">LITTER M<br>BORN JUNE<br>2026<span class="rule"></span></div></div><span class="hero-heart">♥</span><div class="hero-content"><h1 class="statement hero-word"><span class="ch">C</span><span class="ch">O</span><span class="ch">R</span><span class="ch">G</span><span class="ch">I</span></h1><h1 class="statement hero-word"><span class="ch">L</span><span class="ch">O</span><span class="ch">V</span><span class="ch">E</span><span class="ch">R</span><span class="ch">?</span></h1></div><div class="hero-cta-cluster"><a href="#footer" class="btn btn-accent js-open-inquiry">Puppy Inquiry</a><a href="#litter" class="link-u">View Puppies →</a></div></section><!-- ================= ABOUT / MEET THE BREEDER ================= --><section class="about" id="about"><div class="about-wrap"><div class="about-grid"><div class="about-heading"><h2 class="statement about-word-stack"><span class="line">MEET</span><span class="line">OLENA</span></h2></div><div class="about-mid"><div class="about-bio"><p>I'm a dedicated Corgi breeder who believes every puppy deserves the best start in life.</p><p>Health, temperament, and love — these are the values behind everything I do.</p></div><div class="about-stats"><div class="about-stat"><span class="num" data-count-to="5" data-suffix="+">0</span><span class="label">Years</span></div><div class="about-stat"><span class="num" data-count-to="20" data-suffix="+">0</span><span class="label">Families</span></div><div class="about-stat"><span class="num" data-count-to="5" data-suffix="">0</span><span class="label">Medals</span></div></div></div><div class="about-photo-large"><img src="assets/asset-3e33c1ecc147a206.webp" alt="Yuliia Marchenko with her corgi"></div></div></div></section><!-- ================= ADVANTAGES ================= --><section class="advantages" id="advantages" style="background-image:url('assets/asset-bb6e82bfd0876aa3.webp');"><div class="advantages-wrap"><div class="section-head"><h2 class="statement" style="margin-top:16px; color:var(--pink-light);">WHAT DO<br>YOU GET</h2></div><div class="adv-list"><div class="adv-item"><div class="icon-badge"><svg viewBox="0 0 24 24"><rect x="4" y="2.5" width="16" height="19" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg></div><h3>Vet Passport</h3><span class="tag">Full vaccination record</span></div><div class="adv-item"><div class="icon-badge"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><circle cx="12" cy="12" r="2.4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></div><h3>Chip / Tattoo</h3><span class="tag">Breeding standard ID</span></div><div class="adv-item"><div class="icon-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M9 14.5 7.5 21 12 18.5 16.5 21 15 14.5"/></svg></div><h3>KSU / FCI Papers</h3><span class="tag">Official pedigree</span></div><div class="adv-item"><div class="icon-badge"><svg viewBox="0 0 24 24"><path d="M2 7h11v9H2z"/><path d="M13 10h4l4 3v3h-8z"/><circle cx="6.5" cy="18.5" r="1.6"/><circle cx="17" cy="18.5" r="1.6"/></svg></div><h3>Delivery</h3><span class="tag">Ukraine &amp; abroad</span></div></div></div></section><!-- ================= PARENTS / PEDIGREE ================= --><section class="parents" id="parents"><div class="hero-cta-cluster parents-cta-row"><div class="pedigree-nav"><button class="pedigree-arrow" type="button" data-dir="-1" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg></button><button class="pedigree-arrow" type="button" data-dir="1" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div><a href="#footer" class="btn btn-accent js-open-inquiry">Puppy Inquiry</a></div><div class="parents-wrap"><div class="pedigree-label"><span>PEDIGREE</span></div><div class="pedigree-col"><div class="pedigree-toprow"><div class="parents-meta">Zolota Lapa Kennel · Litter J · Born 14.05.2026 · 2 boys &amp; 2 girls</div></div><div class="pedigree-gallery" id="pedigreeGallery"><div class="pedigree-item"><div class="pedigree-num">01</div><div class="pedigree-photo"><img src="assets/asset-e852d695760995c1.webp" alt="Occultus Patronus ex Valhalos Sargas"></div><div class="pedigree-cap"><h3>Occultus Patronus ex Valhalos Sargas</h3><span class="tag">Grandsire · Sire's father</span></div></div><div class="pedigree-item"><div class="pedigree-num">02</div><div class="pedigree-photo"><img src="assets/asset-888ac491f28a1367.webp" alt="Legi Artis Kryptonite"></div><div class="pedigree-cap"><h3>Legi Artis Kryptonite</h3><span class="tag">Grandsire · Dam's father</span></div></div><div class="pedigree-item"><div class="pedigree-num">03</div><div class="pedigree-photo"><img src="assets/asset-c5a16622492d67a0.webp" alt="Phoebe Briciole Grandi"></div><div class="pedigree-cap"><h3>Phoebe Briciole Grandi 🇵🇱</h3><span class="tag">Granddam · Dam's mother</span></div></div><div class="pedigree-item"><div class="pedigree-num">04</div><div class="pedigree-photo"><img src="assets/asset-89a828c1c7675acc.webp" alt="Sire — Timespirit Ferarry Stile" style="object-position:right;"></div><div class="pedigree-cap"><h3>Timespirit Ferarry Stile 🇺🇦</h3><span class="tag">Sire</span></div></div><div class="pedigree-item"><div class="pedigree-num">05</div><div class="pedigree-photo"><img src="assets/asset-03c8be269a35bb09.webp" alt="Dam — Dolce Vita Vero Corde"></div><div class="pedigree-cap"><h3>Dolce Vita Vero Corde 🇺🇦</h3><span class="tag">Dam</span></div></div></div></div></div></section><!-- ================= PUPPIES (scroll-scrubbed video) ================= --><section class="puppies" id="litter"><div class="puppies-head life-corgis-block"><h2 class="statement puppies-word life-corgis-heading scatter-heading"><span class="line">LIFE NEEDS</span><span class="line">MORE CORGIS</span><img class="scatter-el s1" src="assets/asset-816a8501a4d5291d.webp" alt=""><img class="scatter-el s2" src="assets/asset-11deabdb2c7b569f.webp" alt=""><img class="scatter-el s3" src="assets/asset-c6c698f6dcde90fb.webp" alt=""><img class="scatter-el s4" src="assets/asset-867e4e6f3537f13e.webp" alt=""><img class="scatter-el s5" src="assets/asset-21534943c0799a6e.webp" alt=""><img class="scatter-el s6" src="assets/asset-fa43cd61a7f0118c.webp" alt=""></h2></div><div class="puppies-head"><h2 class="statement puppies-word life-corgis-heading scatter-heading"><span class="line">HERE ARE OUR</span><span class="line">NEW PUPPIES</span><img class="scatter-el s1" src="assets/asset-e2bc7985161a077b.webp" alt=""><img class="scatter-el s2" src="assets/asset-8b880a7a54acf636.webp" alt=""><img class="scatter-el s3" src="assets/asset-5c66da73194da777.webp" alt=""><img class="scatter-el s4" src="assets/asset-62fc3c832c8c168e.webp" alt=""><img class="scatter-el s5" src="assets/asset-2be8fcf4f791f584.webp" alt=""></h2></div><div class="puppies-sticky"><div class="puppies-video-bg"><video id="puppiesVideo" muted playsinline preload="auto"><source src="assets/asset-e155d6b495cb0f0c.mp4" type="video/mp4"></video></div><div class="pup-quad-row"><div class="pup-quad" data-puppy="Maxi"><span class="btn btn-accent pup-quad-btn">Maxi</span></div><div class="pup-quad" data-puppy="Mila"><span class="btn btn-accent pup-quad-btn">Mila</span></div><div class="pup-quad" data-puppy="Lupi"><span class="btn btn-accent pup-quad-btn">Lupi</span></div><div class="pup-quad" data-puppy="Tina"><span class="btn btn-accent pup-quad-btn">Tina</span></div></div><div class="puppies-sub-cluster"><p class="puppies-sub">Litter J · 2 boys and 2 girls, born May 2026.</p></div></div></section><!-- ================= REVIEWS ================= --><section class="reviews" id="reviews"><div class="hero-cta-cluster"><div class="ag-nav"><button class="pedigree-arrow" type="button" data-dir="-1" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg></button><button class="pedigree-arrow" type="button" data-dir="1" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div></div><div class="reviews-wrap"><h2 class="statement">HAPPY NEW HOMES</h2></div><div class="ag-bleed"><div class="ag-strip" id="agStrip"><div class="ag-item small" data-quote="Coolest dog on our street, hands down." data-name="Iryna, Lviv"><div class="ag-photo"><img src="assets/asset-fc3e3a4268672100.webp" alt="Corgi wearing sunglasses on a city bench"></div></div><div class="ag-item small" data-quote="He runs the beach every summer now." data-name="Andriy, Odesa"><div class="ag-photo"><img src="assets/asset-58954ed9d3e721bf.webp" alt="Corgi floating on a donut pool ring at sea"></div></div><div class="ag-item big" data-quote="Diva behavior, we love him anyway." data-name="Nazar, Kharkiv"><div class="ag-photo"><img src="assets/asset-e1a8f27c20b481c2.webp" alt="Corgi lounging on a couch with a champagne glass"></div></div><div class="ag-item small" data-quote="They match outfits without even trying." data-name="Diana, Kyiv"><div class="ag-photo"><img src="assets/asset-a9c90dd55ba70cd0.webp" alt="Two corgis wearing sunglasses on a couch"></div></div><div class="ag-item small" data-quote="Still gets stopped for photos daily." data-name="Kateryna, Lviv"><div class="ag-photo"><img src="assets/asset-fc3e3a4268672100.webp" alt="Corgi wearing sunglasses on a city bench"></div></div><div class="ag-item big" data-quote="Best swimmer in the whole family." data-name="Oleh, Odesa"><div class="ag-photo"><img src="assets/asset-58954ed9d3e721bf.webp" alt="Corgi floating on a donut pool ring at sea"></div></div><div class="ag-item small" data-quote="He thinks the couch is his throne." data-name="Yana, Dnipro"><div class="ag-photo"><img src="assets/asset-e1a8f27c20b481c2.webp" alt="Corgi lounging on a couch with a champagne glass"></div></div><div class="ag-item small" data-quote="Double the sunglasses, double the trouble." data-name="Bohdan, Lviv"><div class="ag-photo"><img src="assets/asset-a9c90dd55ba70cd0.webp" alt="Two corgis wearing sunglasses on a couch"></div></div><div class="ag-item big" data-quote="The sunglasses came off, the swagger didn&#39;t." data-name="Marta, Lviv"><div class="ag-photo"><img src="assets/asset-fc3e3a4268672100.webp" alt="Corgi wearing sunglasses on a city bench"></div></div><div class="ag-item small" data-quote="Living his best five-star life." data-name="Olena, Dnipro"><div class="ag-photo"><img src="assets/asset-e1a8f27c20b481c2.webp" alt="Corgi lounging on a couch with a champagne glass"></div></div><div class="ag-item small" data-quote="King of the inflatable donut." data-name="Denys, Odesa"><div class="ag-photo"><img src="assets/asset-58954ed9d3e721bf.webp" alt="Corgi floating on a donut pool ring at sea"></div></div><div class="ag-item big" data-quote="Our two little bodyguards." data-name="Solomiya, Ivano-Frankivsk"><div class="ag-photo"><img src="assets/asset-a9c90dd55ba70cd0.webp" alt="Two corgis wearing sunglasses on a couch"></div></div></div></div><div class="reviews-wrap"><div class="ag-quote" id="agQuote">&ldquo;<span id="agQuoteText">Coolest dog on our street, hands down.</span>&rdquo; <span id="agQuoteName">&mdash; Iryna, Lviv</span></div></div></section><footer id="footer" style="background-image:url('assets/asset-05a256b23c129d72.webp');"><div class="footer-scrim"></div><div class="footer-content"><div class="footer-top"><h2 class="statement footer-heading" style="text-align:left;">LET'S FIND<br>YOUR PUPPY</h2><div class="hero-cta-cluster" style="bottom:20px;"><a href="mailto:hello@welshcorgi.ua" class="btn btn-accent js-open-inquiry">Puppy Inquiry</a></div></div><div class="footer-grid"><div class="footer-col"><div class="footer-brand">Welsh Corgi Ukraine</div><p class="footer-tagline">Pembroke Welsh Corgi breeder<br>Kyiv, Ukraine</p></div><div class="footer-col"><div class="footer-col-title">Contact</div><a href="mailto:hello@welshcorgi.ua">hello@welshcorgi.ua</a><a href="tel:+380000000000">+380 00 000 0000</a></div><div class="footer-col"><div class="footer-col-title">Follow</div><a href="#">Instagram</a><a href="#">Telegram</a><a href="#">Viber</a></div></div><div class="footer-bottom"><div>&copy; 2026 Welsh Corgi Ukraine &middot; Yuliia Marchenko &middot; Portfolio Design Concept</div><div><a href="#privacy" class="js-open-legal" data-legal="privacy">Privacy Policy</a> &nbsp;&middot;&nbsp; <a href="#terms" class="js-open-legal" data-legal="terms">Terms of Service</a> &nbsp;&middot;&nbsp; <a href="#cookies" class="js-open-legal" data-legal="cookies">Cookie Policy</a></div></div></div></footer><!-- ================= PUPPY INQUIRY MODAL ================= --><div class="modal-overlay" id="inquiryOverlay" aria-hidden="true"><div class="modal-card" role="dialog" aria-modal="true" aria-label="Puppy inquiry form"><button class="modal-close" id="inquiryClose" type="button" aria-label="Close"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M5 5l14 14M19 5 5 19" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg></button><div class="modal-media"><img src="assets/asset-496736b387b4bdbe.webp" alt="Corgi puppy"></div><div class="modal-form"><div class="eyebrow">PUPPY INQUIRY<span class="rule"></span></div><h3 class="modal-title">Tell us about your dream corgi</h3><p class="modal-sub">Fill this in and Yuliia will get back to you personally within a day.</p><form id="inquiryForm"><div class="modal-field"><label for="inqName">Name</label><input id="inqName" name="name" type="text" required placeholder="Your name"></div><div class="modal-field"><label for="inqContact">Email or phone</label><input id="inqContact" name="contact" type="text" required placeholder="How can we reach you?"></div><div class="modal-field"><label for="inqPreference">Preferred puppy</label><select id="inqPreference" name="preference"><option>No preference</option><option>Maxi</option><option>Mila</option><option>Lupi</option><option>Tina</option><option>I don't know yet</option></select></div><div class="modal-field"><label for="inqMessage">Message</label>
+</head><body><header><div class="header-inner"><nav><a href="#about">About</a><a href="#parents">Parents</a><a href="#litter">Puppies</a><a href="#reviews">Reviews</a></nav></div></header><!-- ================= HERO ================= --><section class="hero" id="hero"><div class="hero-video-bg" id="heroVideoBg"><video id="scrubVideo" muted playsinline autoplay preload="auto"><source src="assets/asset-a625f8a7036868a3.mp4" type="video/mp4"></video></div><div class="hero-top-row"><div class="eyebrow">PEMBROKE<br>WELSH CORGI<br>BREEDER.<span class="rule"></span></div><div class="eyebrow right">LITTER M<br>BORN JUNE<br>2026<span class="rule"></span></div></div><span class="hero-heart">♥</span><div class="hero-content"><h1 class="statement hero-word"><span class="ch">C</span><span class="ch">O</span><span class="ch">R</span><span class="ch">G</span><span class="ch">I</span></h1><h1 class="statement hero-word"><span class="ch">L</span><span class="ch">O</span><span class="ch">V</span><span class="ch">E</span><span class="ch">R</span><span class="ch">?</span></h1></div><div class="hero-cta-cluster"><a href="#footer" class="btn btn-accent js-open-inquiry">Puppy Inquiry</a><a href="#litter" class="link-u">View Puppies →</a></div></section><!-- ================= ABOUT / MEET THE BREEDER ================= --><section class="about" id="about"><div class="about-wrap"><div class="about-grid"><div class="about-heading"><h2 class="statement about-word-stack"><span class="line">MEET</span><span class="line">OLENA</span></h2></div><div class="about-mid"><div class="about-bio"><p>I'm a dedicated Corgi breeder who believes every puppy deserves the best start in life.</p><p>Health, temperament, and love — these are the values behind everything I do.</p></div><div class="about-stats"><div class="about-stat"><span class="num" data-count-to="5" data-suffix="+">0</span><span class="label">Years</span></div><div class="about-stat"><span class="num" data-count-to="20" data-suffix="+">0</span><span class="label">Families</span></div><div class="about-stat"><span class="num" data-count-to="5" data-suffix="">0</span><span class="label">Medals</span></div></div></div><div class="about-photo-large"><img src="assets/asset-3e33c1ecc147a206.webp" alt="Yuliia Marchenko with her corgi"></div></div></div></section><!-- ================= ADVANTAGES ================= --><section class="advantages" id="advantages" style="background-image:url('assets/asset-bb6e82bfd0876aa3.webp');"><div class="advantages-wrap"><div class="section-head"><h2 class="statement" style="margin-top:16px; color:var(--pink-light);">WHAT DO<br>YOU GET</h2></div><div class="adv-list"><div class="adv-item"><div class="icon-badge"><svg viewBox="0 0 24 24"><rect x="4" y="2.5" width="16" height="19" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg></div><h3>Vet Passport</h3><span class="tag">Full vaccination record</span></div><div class="adv-item"><div class="icon-badge"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><circle cx="12" cy="12" r="2.4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></div><h3>Chip / Tattoo</h3><span class="tag">Breeding standard ID</span></div><div class="adv-item"><div class="icon-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M9 14.5 7.5 21 12 18.5 16.5 21 15 14.5"/></svg></div><h3>KSU / FCI Papers</h3><span class="tag">Official pedigree</span></div><div class="adv-item"><div class="icon-badge"><svg viewBox="0 0 24 24"><path d="M2 7h11v9H2z"/><path d="M13 10h4l4 3v3h-8z"/><circle cx="6.5" cy="18.5" r="1.6"/><circle cx="17" cy="18.5" r="1.6"/></svg></div><h3>Delivery</h3><span class="tag">Ukraine &amp; abroad</span></div></div></div></section><!-- ================= PARENTS / PEDIGREE ================= --><section class="parents" id="parents"><div class="hero-cta-cluster parents-cta-row"><div class="pedigree-nav"><button class="pedigree-arrow" type="button" data-dir="-1" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg></button><button class="pedigree-arrow" type="button" data-dir="1" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div><a href="#footer" class="btn btn-accent js-open-inquiry">Puppy Inquiry</a></div><div class="parents-wrap"><div class="pedigree-label"><span>PEDIGREE</span></div><div class="pedigree-col"><div class="pedigree-toprow"><div class="parents-meta">Zolota Lapa Kennel · Litter J · Born 14.05.2026 · 2 boys &amp; 2 girls</div></div><div class="pedigree-gallery" id="pedigreeGallery"><div class="pedigree-item"><div class="pedigree-num">01</div><div class="pedigree-photo"><img src="assets/asset-e852d695760995c1.webp" alt="Occultus Patronus ex Valhalos Sargas"></div><div class="pedigree-cap"><h3>Occultus Patronus ex Valhalos Sargas</h3><span class="tag">Grandsire · Sire's father</span></div></div><div class="pedigree-item"><div class="pedigree-num">02</div><div class="pedigree-photo"><img src="assets/asset-888ac491f28a1367.webp" alt="Legi Artis Kryptonite"></div><div class="pedigree-cap"><h3>Legi Artis Kryptonite</h3><span class="tag">Grandsire · Dam's father</span></div></div><div class="pedigree-item"><div class="pedigree-num">03</div><div class="pedigree-photo"><img src="assets/asset-c5a16622492d67a0.webp" alt="Phoebe Briciole Grandi"></div><div class="pedigree-cap"><h3>Phoebe Briciole Grandi 🇵🇱</h3><span class="tag">Granddam · Dam's mother</span></div></div><div class="pedigree-item"><div class="pedigree-num">04</div><div class="pedigree-photo"><img src="assets/asset-89a828c1c7675acc.webp" alt="Sire — Timespirit Ferarry Stile" style="object-position:right;"></div><div class="pedigree-cap"><h3>Timespirit Ferarry Stile 🇺🇦</h3><span class="tag">Sire</span></div></div><div class="pedigree-item"><div class="pedigree-num">05</div><div class="pedigree-photo"><img src="assets/asset-03c8be269a35bb09.webp" alt="Dam — Dolce Vita Vero Corde"></div><div class="pedigree-cap"><h3>Dolce Vita Vero Corde 🇺🇦</h3><span class="tag">Dam</span></div></div></div></div></div></section><!-- ================= PUPPIES (scroll-scrubbed video) ================= --><section class="puppies" id="litter"><div class="puppies-head life-corgis-block"><h2 class="statement puppies-word life-corgis-heading scatter-heading"><span class="line">LIFE NEEDS</span><span class="line">MORE CORGIS</span><img class="scatter-el s1" src="assets/asset-816a8501a4d5291d.webp" alt=""><img class="scatter-el s2" src="assets/asset-11deabdb2c7b569f.webp" alt=""><img class="scatter-el s3" src="assets/asset-c6c698f6dcde90fb.webp" alt=""><img class="scatter-el s5" src="assets/asset-21534943c0799a6e.webp" alt=""><img class="scatter-el s6" src="assets/asset-fa43cd61a7f0118c.webp" alt=""></h2></div><div class="puppies-head"><h2 class="statement puppies-word life-corgis-heading scatter-heading"><span class="line">HERE ARE OUR</span><span class="line">NEW PUPPIES</span><img class="scatter-el s1" src="assets/asset-e2bc7985161a077b.webp" alt=""><img class="scatter-el s2" src="assets/asset-8b880a7a54acf636.webp" alt=""><img class="scatter-el s3" src="assets/asset-5c66da73194da777.webp" alt=""><img class="scatter-el s5" src="assets/asset-2be8fcf4f791f584.webp" alt=""></h2></div><div class="puppies-sticky"><div class="puppies-video-bg"><video id="puppiesVideo" muted playsinline preload="auto"><source src="assets/asset-e155d6b495cb0f0c.mp4" type="video/mp4"></video></div><div class="pup-quad-row"><div class="pup-quad" data-puppy="Maxi"><span class="btn btn-accent pup-quad-btn">Maxi</span></div><div class="pup-quad" data-puppy="Mila"><span class="btn btn-accent pup-quad-btn">Mila</span></div><div class="pup-quad" data-puppy="Lupi"><span class="btn btn-accent pup-quad-btn">Lupi</span></div><div class="pup-quad" data-puppy="Tina"><span class="btn btn-accent pup-quad-btn">Tina</span></div></div><div class="puppies-sub-cluster"><p class="puppies-sub">Litter J · 2 boys and 2 girls, born May 2026.</p></div></div></section><!-- ================= REVIEWS ================= --><section class="reviews" id="reviews"><div class="hero-cta-cluster"><div class="ag-nav"><button class="pedigree-arrow" type="button" data-dir="-1" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg></button><button class="pedigree-arrow" type="button" data-dir="1" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div></div><div class="reviews-wrap"><h2 class="statement">HAPPY NEW HOMES</h2></div><div class="ag-bleed"><div class="ag-strip" id="agStrip"><div class="ag-item small" data-quote="Coolest dog on our street, hands down." data-name="Iryna, Lviv"><div class="ag-photo"><img src="assets/asset-fc3e3a4268672100.webp" alt="Corgi wearing sunglasses on a city bench"></div></div><div class="ag-item small" data-quote="He runs the beach every summer now." data-name="Andriy, Odesa"><div class="ag-photo"><img src="assets/asset-58954ed9d3e721bf.webp" alt="Corgi floating on a donut pool ring at sea"></div></div><div class="ag-item big" data-quote="Diva behavior, we love him anyway." data-name="Nazar, Kharkiv"><div class="ag-photo"><img src="assets/asset-e1a8f27c20b481c2.webp" alt="Corgi lounging on a couch with a champagne glass"></div></div><div class="ag-item small" data-quote="They match outfits without even trying." data-name="Diana, Kyiv"><div class="ag-photo"><img src="assets/asset-a9c90dd55ba70cd0.webp" alt="Two corgis wearing sunglasses on a couch"></div></div><div class="ag-item small" data-quote="Still gets stopped for photos daily." data-name="Kateryna, Lviv"><div class="ag-photo"><img src="assets/asset-fc3e3a4268672100.webp" alt="Corgi wearing sunglasses on a city bench"></div></div><div class="ag-item big" data-quote="Best swimmer in the whole family." data-name="Oleh, Odesa"><div class="ag-photo"><img src="assets/asset-58954ed9d3e721bf.webp" alt="Corgi floating on a donut pool ring at sea"></div></div><div class="ag-item small" data-quote="He thinks the couch is his throne." data-name="Yana, Dnipro"><div class="ag-photo"><img src="assets/asset-e1a8f27c20b481c2.webp" alt="Corgi lounging on a couch with a champagne glass"></div></div><div class="ag-item small" data-quote="Double the sunglasses, double the trouble." data-name="Bohdan, Lviv"><div class="ag-photo"><img src="assets/asset-a9c90dd55ba70cd0.webp" alt="Two corgis wearing sunglasses on a couch"></div></div><div class="ag-item big" data-quote="The sunglasses came off, the swagger didn&#39;t." data-name="Marta, Lviv"><div class="ag-photo"><img src="assets/asset-fc3e3a4268672100.webp" alt="Corgi wearing sunglasses on a city bench"></div></div><div class="ag-item small" data-quote="Living his best five-star life." data-name="Olena, Dnipro"><div class="ag-photo"><img src="assets/asset-e1a8f27c20b481c2.webp" alt="Corgi lounging on a couch with a champagne glass"></div></div><div class="ag-item small" data-quote="King of the inflatable donut." data-name="Denys, Odesa"><div class="ag-photo"><img src="assets/asset-58954ed9d3e721bf.webp" alt="Corgi floating on a donut pool ring at sea"></div></div><div class="ag-item big" data-quote="Our two little bodyguards." data-name="Solomiya, Ivano-Frankivsk"><div class="ag-photo"><img src="assets/asset-a9c90dd55ba70cd0.webp" alt="Two corgis wearing sunglasses on a couch"></div></div></div></div><div class="reviews-wrap"><div class="ag-quote" id="agQuote">&ldquo;<span id="agQuoteText">Coolest dog on our street, hands down.</span>&rdquo; <span id="agQuoteName">&mdash; Iryna, Lviv</span></div></div></section><footer id="footer" style="background-image:url('assets/asset-05a256b23c129d72.webp');"><div class="footer-scrim"></div><div class="footer-content"><div class="footer-top"><h2 class="statement footer-heading" style="text-align:left;">LET'S FIND<br>YOUR PUPPY</h2><div class="hero-cta-cluster" style="bottom:20px;"><a href="mailto:hello@welshcorgi.ua" class="btn btn-accent js-open-inquiry">Puppy Inquiry</a></div></div><div class="footer-grid"><div class="footer-col"><div class="footer-brand">Welsh Corgi Ukraine</div><p class="footer-tagline">Pembroke Welsh Corgi breeder<br>Kyiv, Ukraine</p></div><div class="footer-col"><div class="footer-col-title">Contact</div><a href="mailto:hello@welshcorgi.ua">hello@welshcorgi.ua</a><a href="tel:+380000000000">+380 00 000 0000</a></div><div class="footer-col"><div class="footer-col-title">Follow</div><a href="#">Instagram</a><a href="#">Telegram</a><a href="#">Viber</a></div></div><div class="footer-bottom"><div>&copy; 2026 Welsh Corgi Ukraine &middot; Yuliia Marchenko &middot; Portfolio Design Concept</div><div><a href="#privacy" class="js-open-legal" data-legal="privacy">Privacy Policy</a> &nbsp;&middot;&nbsp; <a href="#terms" class="js-open-legal" data-legal="terms">Terms of Service</a> &nbsp;&middot;&nbsp; <a href="#cookies" class="js-open-legal" data-legal="cookies">Cookie Policy</a></div></div></div></footer><!-- ================= PUPPY INQUIRY MODAL ================= --><div class="modal-overlay" id="inquiryOverlay" aria-hidden="true"><div class="modal-card" role="dialog" aria-modal="true" aria-label="Puppy inquiry form"><button class="modal-close" id="inquiryClose" type="button" aria-label="Close"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M5 5l14 14M19 5 5 19" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg></button><div class="modal-media"><img src="assets/asset-496736b387b4bdbe.webp" alt="Corgi puppy"></div><div class="modal-form"><div class="eyebrow">PUPPY INQUIRY<span class="rule"></span></div><h3 class="modal-title">Tell us about your dream corgi</h3><p class="modal-sub">Fill this in and Yuliia will get back to you personally within a day.</p><form id="inquiryForm"><div class="modal-field"><label for="inqName">Name</label><input id="inqName" name="name" type="text" required placeholder="Your name"></div><div class="modal-field"><label for="inqContact">Email or phone</label><input id="inqContact" name="contact" type="text" required placeholder="How can we reach you?"></div><div class="modal-field"><label for="inqPreference">Preferred puppy</label><select id="inqPreference" name="preference"><option>No preference</option><option>Maxi</option><option>Mila</option><option>Lupi</option><option>Tina</option><option>I don't know yet</option></select></div><div class="modal-field"><label for="inqMessage">Message</label>
  <textarea id="inqMessage" name="message" rows="3" placeholder="Tell us a little about yourself and your home"></textarea>
  </div><button type="submit" class="btn btn-accent modal-submit">Send Inquiry</button></form><div class="modal-success" id="inquirySuccess"><div class="modal-success-title">Thank you!</div><p>Your inquiry has been sent. Yuliia usually replies within a day.</p></div></div></div></div><!-- ================= PUPPY PROFILE MODAL ================= --><div class="modal-overlay" id="puppyProfileOverlay" aria-hidden="true"><div class="modal-card" role="dialog" aria-modal="true" aria-label="Puppy profile"><button class="modal-close js-puppy-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M5 5l14 14M19 5 5 19" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg></button><div class="modal-media"><img id="puppyProfileImg" src="" alt=""></div><div class="modal-form"><div class="eyebrow">MEET<span class="rule"></span></div><h3 class="modal-title" id="puppyProfileName">Maxi</h3><p class="modal-sub" id="puppyProfileMeta">Boy &middot; 8 weeks old</p><div class="puppy-trait"><span class="puppy-trait-label">Character</span><span class="puppy-trait-value" id="puppyProfileChar"></span></div><div class="puppy-trait"><span class="puppy-trait-label">Loves to do</span><span class="puppy-trait-value" id="puppyProfileActivity"></span></div><div class="puppy-trait"><span class="puppy-trait-label">Favorite food</span><span class="puppy-trait-value" id="puppyProfileFood"></span></div><a href="#footer" class="btn btn-accent" id="puppyProfileInquiryBtn" style="margin-top:24px;">Puppy Inquiry</a></div></div></div>
 
@@ -787,6 +867,183 @@
       });
     }
   }
+
+
+  // ================= INTERACTIVE LETTERS — magnetic hover =================
+  (function(){
+    const heads = document.querySelectorAll('.scatter-heading');
+    if(!heads.length) return;
+
+    heads.forEach(head => {
+      head.querySelectorAll('.line').forEach(line => {
+        if(line.dataset.lettersReady === '1') return;
+        line.dataset.lettersReady = '1';
+
+        const text = line.textContent;
+        line.textContent = '';
+
+        [...text].forEach(ch => {
+          const span = document.createElement('span');
+          span.className = 'ch' + (ch === ' ' ? ' space' : '');
+          span.textContent = ch === ' ' ? '\u00A0' : ch;
+          line.appendChild(span);
+        });
+      });
+
+      const chars = [...head.querySelectorAll('.ch')];
+      if(!chars.length) return;
+
+      const RADIUS = 105;
+      const LIFT = 18;
+      const TILT = 8;
+      const SCALE = .06;
+      let raf = null, mx = 0, my = 0, active = false;
+
+      function apply(){
+        raf = null;
+        chars.forEach(ch => {
+          if(!active){
+            ch.style.setProperty('--chy','0px');
+            ch.style.setProperty('--chr','0deg');
+            ch.style.setProperty('--chs','1');
+            return;
+          }
+          const r = ch.getBoundingClientRect();
+          const dx = (r.left + r.width/2) - mx;
+          const dy = (r.top + r.height/2) - my;
+          const d = Math.hypot(dx,dy) || 1;
+          const f = Math.max(0, 1 - d/RADIUS);
+          const e = f*f*(3-2*f);
+
+          ch.style.setProperty('--chy', (-LIFT * e).toFixed(2) + 'px');
+          ch.style.setProperty('--chr', ((dx/RADIUS) * TILT * e).toFixed(2) + 'deg');
+          ch.style.setProperty('--chs', (1 + SCALE * e).toFixed(3));
+        });
+      }
+
+      function queue(){ if(raf === null) raf = requestAnimationFrame(apply); }
+
+      head.addEventListener('pointermove', e => {
+        active = true; mx = e.clientX; my = e.clientY; queue();
+      }, {passive:true});
+
+      head.addEventListener('pointerleave', () => {
+        active = false; queue();
+      });
+    });
+  })();
+
+  // ================= SCROLL-DRIVEN SCATTER ICONS =================
+  (function(){
+    const icons = Array.from(document.querySelectorAll('.scatter-el'));
+    if (!icons.length) return;
+
+    const rotations = {
+      s1:'-8', s2:'7', s3:'-12', s5:'-6', s6:'-4'
+    };
+
+    icons.forEach((el, i) => {
+      const slot = Array.from(el.classList).find(c => /^s\d$/.test(c));
+      const rot = el.getAttribute('data-rot') || rotations[slot] || '0';
+      el.style.setProperty('--rot', rot + 'deg');
+      el.style.setProperty('--pop-delay', (i * 0.07) + 's');
+      el.style.setProperty('--float-dur', (4.8 + (i % 4) * .55).toFixed(2) + 's');
+      el.style.setProperty('--float-delay', (i * .22).toFixed(2) + 's');
+      el.style.setProperty('--sx', '0px');
+      el.style.setProperty('--sy', '0px');
+      el.style.setProperty('--scroll-scale', '1');
+      el.style.setProperty('--scroll-rotate', '0deg');
+      el.style.setProperty('--scroll-opacity', '0');
+    });
+
+    // Initial pop is tied to viewport entry, but is also reset when leaving.
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const el = entry.target;
+        if (entry.isIntersecting) {
+          el.classList.remove('is-in');
+          void el.offsetWidth;
+          el.classList.add('is-in');
+        } else {
+          el.classList.remove('is-in');
+        }
+      });
+    }, {threshold:[0,.08,.35], rootMargin:'0px 0px -2% 0px'});
+
+    icons.forEach(el => observer.observe(el));
+
+    let lastY = window.scrollY;
+    let direction = 1;
+    let raf = null;
+
+    function clamp(v,a,b){ return Math.max(a, Math.min(b,v)); }
+    function ease(v){ return v*v*(3-2*v); }
+
+    function update(){
+      raf = null;
+      const vh = window.innerHeight;
+
+      icons.forEach((el, i) => {
+        const r = el.getBoundingClientRect();
+        const center = r.top + r.height/2;
+
+        // 0 when far outside, 1 around the visual center of the viewport.
+        const proximity = clamp(1 - Math.abs(center - vh*.54)/(vh*.72), 0, 1);
+        const e = ease(proximity);
+
+        // Strong reaction to scrolling: the icons move, tilt and scale.
+        // Each icon gets a slightly different phase so the group feels organic.
+        const phase = ((i % 5) - 2) * 1.0;
+        const push = direction * (24 + (i % 4) * 7) * e;
+
+        el.style.setProperty('--sx', (phase * 7 * e).toFixed(2) + 'px');
+        el.style.setProperty('--sy', push.toFixed(2) + 'px');
+        el.style.setProperty('--scroll-scale', (1 + .22 * e).toFixed(3));
+        el.style.setProperty('--scroll-rotate', ((phase * 4 + direction * 7 * e)).toFixed(2) + 'deg');
+        el.style.setProperty('--scroll-opacity', e.toFixed(3));
+      });
+    }
+
+    function queue(){
+      if (raf === null) raf = requestAnimationFrame(update);
+    }
+
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      if (Math.abs(y-lastY) > 1) direction = y > lastY ? 1 : -1;
+      lastY = y;
+      queue();
+    }, {passive:true});
+
+    window.addEventListener('resize', queue, {passive:true});
+    queue();
+
+    // Cursor tilt remains subtle and secondary to the much stronger scroll motion.
+    const TILT_MAX = 10;
+    let tiltRAF = null, mx = 0, my = 0;
+
+    window.addEventListener('mousemove', e => {
+      mx=e.clientX; my=e.clientY;
+      if (tiltRAF) return;
+      tiltRAF=requestAnimationFrame(()=>{
+        tiltRAF=null;
+        const cx=window.innerWidth/2, cy=window.innerHeight/2;
+        const nx=clamp((mx-cx)/cx,-1,1), ny=clamp((my-cy)/cy,-1,1);
+        icons.forEach((el,i)=>{
+          const depth=.5+(i%3)*.15;
+          el.style.setProperty('--ry', (nx*TILT_MAX*depth).toFixed(2)+'deg');
+          el.style.setProperty('--rx', (-ny*TILT_MAX*depth).toFixed(2)+'deg');
+        });
+      });
+    }, {passive:true});
+
+    window.addEventListener('mouseleave',()=>{
+      icons.forEach(el=>{
+        el.style.setProperty('--rx','0deg');
+        el.style.setProperty('--ry','0deg');
+      });
+    });
+  })();
 </script>
 
 </body></html>
