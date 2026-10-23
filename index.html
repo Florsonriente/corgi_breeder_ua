@@ -795,6 +795,41 @@
     transition:opacity .35s ease;
   }
   #litterGallery .ag-item.is-open .ag-photo::before{opacity:.35;}
+  /* number and status on each photo */
+  #litterGallery .ag-num{
+    position:absolute; z-index:3; left:clamp(14px, 1.6vw, 24px); top:clamp(12px, 1.6vw, 22px);
+    font-family:var(--font-display); font-weight:300; font-size:clamp(28px, 3vw, 52px); line-height:1;
+    color:#fff; text-shadow:0 2px 14px rgba(40,20,6,.35); pointer-events:none;
+  }
+  #litterGallery .ag-status{
+    position:absolute; z-index:3; right:clamp(12px, 1.4vw, 20px); top:clamp(14px, 1.6vw, 24px);
+    display:inline-flex; align-items:center; gap:7px; padding:6px 12px; border-radius:999px;
+    background:rgba(246,236,228,.92); color:#3c1d09;
+    font-size:11px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; pointer-events:none;
+  }
+  #litterGallery .ag-status::before{content:''; width:7px; height:7px; border-radius:50%; background:#3aa66a;}
+  #litterGallery .ag-status.is-reserved{background:rgba(60,29,9,.88); color:#F6E9E2;}
+  #litterGallery .ag-status.is-reserved::before{background:var(--raspberry);}
+  #litterGallery .ag-item{cursor:pointer;}
+  /* counter and dots under the strip */
+  .fy-nav{display:flex; align-items:center; justify-content:center; gap:22px; padding:18px 20px 0; flex-wrap:wrap;}
+  .fy-count{font-size:var(--text-caption-size); letter-spacing:var(--text-accent-caps-ls); text-transform:uppercase; color:rgba(60,29,9,.6); white-space:nowrap;}
+  .fy-count b{color:var(--raspberry); font-weight:800;}
+  .fy-count i{font-style:normal; color:#3c1d09; margin-left:6px;}
+  .fy-dots{display:flex; gap:10px;}
+  .fy-dot{
+    width:10px; height:10px; padding:0; border:0; border-radius:50%; cursor:pointer;
+    background:rgba(60,29,9,.22); transition:background .25s ease, transform .25s ease; position:relative;
+  }
+  .fy-dot:hover{background:rgba(60,29,9,.45);}
+  .fy-dot.is-on{background:var(--raspberry); transform:scale(1.25);}
+  .fy-dot::after{
+    content:attr(data-name); position:absolute; left:50%; bottom:calc(100% + 8px); transform:translateX(-50%);
+    padding:4px 9px; border-radius:6px; background:#3c1d09; color:#F6E9E2; font-size:11px; letter-spacing:.06em;
+    white-space:nowrap; opacity:0; pointer-events:none; transition:opacity .2s ease;
+  }
+  .fy-dot:hover::after{opacity:1;}
+  #litterGallery .find-meta{padding-top:10px;}
   /* accordion: the card opens sideways — the photo keeps its place and the
      details panel unfolds beside it, pushing the next cards along */
   #litterGallery .find-stage{height:auto;}
@@ -2175,7 +2210,8 @@
     #litterGallery .find-strip{position:relative; top:auto; transform:none;}
     #litterGallery .ag-strip{flex-direction:row !important; overflow-x:auto; overscroll-behavior-x:contain;
       -webkit-overflow-scrolling:touch; touch-action:pan-x pan-y; scroll-snap-type:x proximity; cursor:default;}
-    #litterGallery .ag-item{scroll-snap-align:start;}
+    #litterGallery .ag-item{scroll-snap-align:center;}
+    #litterGallery .ag-strip{scroll-snap-type:x mandatory !important; padding-inline:calc((100vw - var(--fy-w)) / 2); scroll-padding-inline:0;}
     #litterGallery .ag-item:not(.is-open), #litterGallery .ag-item.small:not(.is-open), #litterGallery .ag-item.big:not(.is-open){width:var(--fy-w) !important;}
     /* cut-outs that pop past the screen edge don't widen the page (clip keeps sticky blocks working) */
     html, body{overflow-x:clip;}
@@ -2242,12 +2278,18 @@
     .globe-detail-rows dt{white-space:normal;}
     .globe-detail-rows dd{text-align:left; flex:1 1 100%;}
 
-    /* footer: Follow on the left like the rest */
+    /* footer: everything on the same left edge, the small print included */
     .footer-col:last-child{text-align:left !important;}
+    .footer-bottom{align-items:flex-start !important; text-align:left !important;}
+    .footer-bottom > div{text-align:left !important;}
+
+    /* the cut-outs on the big lines come back on phones: seated on the letters,
+       a little smaller, and they pop in as the line comes into view */
+    .scatter-heading .seat-toy, .pups-title .pups-toy{display:block !important;}
   }
   @media (max-width:600px){
     /* phones: no accordion — name, words and the button sit with each photo */
-    #litterGallery{--fy-w:68vw;}
+    #litterGallery{--fy-w:84vw;}
     #litterGallery .ag-item.is-open{width:var(--fy-w);}
     #litterGallery .ag-more{display:none !important;}
     #litterGallery .ag-cap{display:block !important; position:static; opacity:1; padding:10px 2px 0;}
@@ -2303,7 +2345,7 @@
   // made text uses window.t(). The EN / UA button in the menu switches and
   // reloads at the same scroll position.
   (function(){
-    const UK = {"CORGI": "КОРГІ", "Work in progress": "Сайт у розробці", "Enter": "Увійти", "Wrong password — try again": "Невірний пароль — спробуйте ще", "Home": "Головна", "Some photos and videos on this site were made with the help of AI, to show our dogs and their everyday life. We're happy to confirm any facts or answer any question —": "Деякі фото й відео на сайті створені за допомогою ШІ, щоб показати наших собак і їхнє повсякденне життя. Ми з радістю підтвердимо будь-які факти чи відповімо на будь-яке запитання —", "just ask": "просто напишіть нам", "sunset walks in the meadows": "прогулянки луками на заході сонця", "evenings on the velvet sofa": "вечори на оксамитовому дивані", "brunch on the sofa, shades on": "бранч на дивані в сонцезахисних окулярах", "floating on the donut ring": "плавати на надувному пончику", "skateboarding along Bondi": "кататися на скейті вздовж Бонді", "lazy Sundays with her brother": "ліниві неділі з братом", "chasing kites over the dunes": "ганятися за повітряними зміями на дюнах", "road trips in the convertible": "подорожі в кабріолеті", "poolside afternoons by the sea": "полудні біля басейну з видом на море", "About": "Про нас", "Parents": "Батьки", "Puppies": "Цуценята", "Reviews": "Відгуки", "PEMBROKE WELSH CORGI": "ВЕЛШ-КОРГІ ПЕМБРОК", "BREEDER.": "РОЗПЛІДНИК.", "Find your perfect Pembroke Welsh Corgi.": "Знайдіть свого ідеального вельш-коргі пемброк.", "Puppy Inquiry": "Запит на цуценя", "MEET": "ПРИВІТ,", "OLENA": "Я ОЛЕНА", "I'm a dedicated Corgi breeder who believes every puppy deserves the best start in life.": "Я заводчиця коргі, яка вірить, що кожне цуценя заслуговує на найкращий старт у житті.", "Health, temperament, and love — these are the values behind everything I do.": "Здоров'я, характер і любов — цінності, на яких тримається все, що я роблю.", "Years": "Років", "Families": "Родин", "Medals": "Медалей", "PROCESS": "ПРОЦЕС", "Deposit €300 · papers, chip & vaccinations included": "Завдаток €300 · документи, чип і щеплення включено", "Step 01": "Крок 01", "Step 02": "Крок 02", "Step 03": "Крок 03", "Step 04": "Крок 04", "inquiry": "запит", "meet & match": "знайомство", "reservation": "бронювання", "going home": "додому", "Tell us about you and your home. We reply within a day with the puppies that fit — and answer every question.": "Розкажіть про себе й свій дім. Протягом доби ми відповімо, які цуценята вам підходять, — і на всі запитання.", "A video call with the litter and the parents. We match temperament to your life, not just looks.": "Відеодзвінок із цуценятами та їхніми батьками. Ми підбираємо характер під ваше життя, а не лише зовнішність.", "A €300 deposit holds your puppy. Weekly photos, videos and health updates until you meet.": "Завдаток €300 закріплює цуценя за вами. Щотижня — фото, відео й новини про здоров'я до зустрічі.", "At 8 weeks: papers, vaccinations, chip. Pickup in Kyiv or delivery to your door, with lifelong support.": "У 8 тижнів: документи, щеплення, чип. Самовивіз у Києві або доставка до дверей — і підтримка на все життя.", "YOU GET": "ПЕРЕВАГИ", "all included": "все включено", "Every puppy leaves with papers, ID, vaccinations and a way home — nothing is sold as an extra": "Кожне цуценя їде додому з документами, чипом, щепленнями й доставкою — нічого не продається окремо", "vet passport": "ветпаспорт", "chip / tattoo": "чип / тату", "ksu / fci papers": "документи ксу / fci", "delivery": "доставка", "Full vaccination record, deworming schedule and a vet check before the move.": "Усі щеплення, графік дегельмінтизації та огляд ветеринара перед переїздом.", "Breeding-standard ID, registered to you on the day of handover.": "Ідентифікація за племінним стандартом, оформлена на вас у день передачі.", "Official KSU pedigree, recognised by the FCI worldwide — ready for shows and breeding.": "Офіційний родовід КСУ, визнаний FCI у всьому світі, — для виставок і розведення.", "Across Ukraine & abroad with a trusted carrier, and updates all the way.": "По Україні та за кордон із перевіреним перевізником і новинами всю дорогу.", "WHAT DO": "ЩО ВИ", "U GET": "ОТРИМУЄТЕ", "Vet Passport": "Ветпаспорт", "Full vaccination record": "Усі щеплення", "Chip / Tattoo": "Чип / тату", "Breeding standard ID": "Племінна ідентифікація", "KSU / FCI Papers": "Документи КСУ / FCI", "Official pedigree": "Офіційний родовід", "Delivery": "Доставка", "Ukraine & abroad": "Україна й за кордон", "PARENTS": "БАТЬКИ", "Born": "Народження", "Titles": "Титули", "Health": "Здоров'я", "Grandsire · Sire's father": "Дід · батько тата", "Grandsire · Dam's father": "Дід · батько мами", "Granddam · Dam's mother": "Бабуся · мама мами", "Sire": "Тато", "Dam": "Мама", "HD-A · full dentition": "HD-A · повна зубна формула", "BEST IN": "НАЙКРАЩІ", "SHOW": "НА ШОУ", "CACIB Kyiv · Best of Breed": "CACIB Київ · Найкращий представник породи", "Mar 2025": "берез. 2025", "Best of Breed": "Найкращий представник породи", "Corgi Club Specialty, Lviv · Best Puppy": "Монопородна виставка, Львів · Найкраще цуценя", "Sep 2024": "верес. 2024", "Best Puppy in Show": "Найкраще цуценя виставки", "National Dog Show, Odesa · CAC": "Національна виставка, Одеса · CAC", "Jun 2024": "черв. 2024", "CAC · Best Female": "CAC · Найкраща сука", "Junior Champion of Ukraine": "Юний чемпіон України", "Jan 2024": "січ. 2024", "Junior Champion": "Юний чемпіон", "MEET THE": "НАШІ", "BEST KIDS": "МАЛЮКИ", "Champion": "Чемпіони", "Balanced": "Гармонійні", "Healthy": "Здорові", "Gentle": "Лагідні", "Bold stance · steady nerves": "Впевнена постава · міцні нерви", "Level topline · correct bite": "Рівна спина · правильний прикус", "HD-A parents · DM clear": "Батьки HD-A · DM clear", "Calm with kids · quick to learn": "Спокійні з дітьми · швидко вчаться", "GOOD": "ВАРТО", "TO KNOW": "ЗНАТИ", "Still unsure about something? Ask directly — a real answer beats a page of small print.": "Щось досі незрозуміло? Запитайте напряму — жива відповідь краща за сторінку дрібного шрифту.", "Ask a question": "Поставити запитання", "What vaccinations does the puppy have?": "Які щеплення має цуценя?", "By eight weeks the puppy has had two deworming courses and its first complex vaccination, entered in an international vet passport. The second shot falls three weeks later, already in your care — we send a written schedule and remind you when it is due.": "До восьми тижнів цуценя проходить два курси дегельмінтизації та отримує перше комплексне щеплення, внесене в міжнародний ветпаспорт. Друге щеплення — через три тижні, вже у вас: ми надішлемо графік і нагадаємо, коли прийде час.", "Can you deliver abroad?": "Чи доставляєте за кордон?", "Yes. Puppies from this kennel live in Germany, Poland, the UK, Canada and the UAE. Flights are booked as cabin baggage with a courier where the airline allows it. Export paperwork — rabies titre test, EU health certificate, TRACES — is prepared by us; the cost of transport is quoted separately and openly.": "Так. Цуценята з нашого розплідника живуть у Німеччині, Польщі, Великій Британії, Канаді та ОАЕ. Перельоти бронюємо в салоні з кур'єром, де це дозволяє авіакомпанія. Документи на виїзд — тест на титр антитіл до сказу, ветсертифікат ЄС, TRACES — готуємо ми; вартість перевезення вказуємо окремо й прозоро.", "What is included in the price?": "Що входить у вартість?", "KSU/FCI pedigree documents, vet passport with vaccinations, microchip, a starter pack of the food the puppy is used to, and health results for both parents. Nothing on that list is an upsell.": "Родовід КСУ/FCI, ветпаспорт зі щепленнями, мікрочип, стартовий набір звичного для цуценяти корму та результати тестів здоров'я обох батьків. Нічого з цього не доплачується окремо.", "Can I come and see the puppies?": "Чи можна приїхати подивитися на цуценят?", "After the third week, by appointment. Before that the litter is kept quiet for the mother's sake. If you cannot travel to Kyiv we do a live video call instead — no edited clips, just the puppies as they are that day.": "Після третього тижня, за домовленістю. До того виводок відпочиває заради спокою мами. Якщо не можете приїхати до Києва, зробимо живий відеодзвінок — без монтажу, цуценята такі, як є того дня.", "How long is the waiting list?": "Скільки триває черга?", "Usually one to two litters ahead, which is three to eight months. A deposit reserves your place in the queue rather than a specific puppy, and it is fully refundable if nothing suits you when the litter arrives.": "Зазвичай на один–два виводки вперед, тобто три–вісім місяців. Завдаток бронює місце в черзі, а не конкретне цуценя, і повністю повертається, якщо з нового виводку вам ніхто не підійде.", "REVIEWS": "ВІДГУКИ", "FAMILIES WORLDWIDE": "РОДИНИ ПО ВСЬОМУ СВІТУ", "all over the world": "по всьому світу", "Our dogs have become happy members of families in Ukraine, across Europe and beyond.": "Наші собаки стали щасливими членами родин в Україні, по всій Європі й далеко за її межами.", "Spin the globe and hover a marker to meet the family": "Покрутіть глобус і наведіть на позначку, щоб познайомитися з родиною", "NOW LIVES IN": "ТЕПЕР ЖИВЕ В", "Lives with": "Живе з", "Age": "Вік", "Favourite thing": "Найбільше любить", "Kyiv, Ukraine": "Київ, Україна", "Berlin, Germany": "Берлін, Німеччина", "New York, USA": "Нью-Йорк, США", "São Paulo, Brazil": "Сан-Паулу, Бразилія", "Sydney, Australia": "Сідней, Австралія", "Tokyo, Japan": "Токіо, Японія", "Cape Town, S. Africa": "Кейптаун, ПАР", "London, UK": "Лондон, Велика Британія", "Toronto, Canada": "Торонто, Канада", "Dubai, UAE": "Дубай, ОАЕ", "1 year old": "1 рік", "2 years old": "2 роки", "3 years old": "3 роки", "4 years old": "4 роки", "5 years old": "5 років", "the Kovalenko family": "родина Коваленків", "Anna & Jonas": "Анна та Йонас", "the Ramirez family": "родина Рамірес", "Beatriz & her two kids": "Беатріс і двоє її дітей", "the Hartley family": "родина Гартлі", "Yuki & Haruto": "Юкі та Харуто", "the Nkosi family": "родина Нкосі", "Eleanor & Tom": "Елеонора та Том", "the Tremblay family": "родина Трамбле", "the Al-Farsi family": "родина Аль-Фарсі", "Sunday runs along the Dnipro": "недільні пробіжки вздовж Дніпра", "stealing socks before breakfast": "красти шкарпетки до сніданку", "rooftop naps in the sun": "спати на даху під сонцем", "chasing the garden sprinkler": "ганятися за садовою поливалкою", "bodysurfing at Bondi": "бодисерфінг на Бонді", "riding in the bike basket": "кататися в кошику велосипеда", "hiking up Table Mountain": "походи на Столову гору", "guarding the Sunday roast": "охороняти недільну печеню", "snow — all of it, every winter": "сніг — увесь, щозими", "air-conditioned zoomies": "гасати під кондиціонером", " in ": " в ", "LIFE NEEDS": "СВІТУ ТРЕБА", "MORE CORGIS": "БІЛЬШЕ КОРГІ", "LET’S": "ЗНАЙДІМО", "FIND": "", "YOURS": "ВАШОГО", "Litter J · born May 2025": "Виводок J · народжені у травні 2025", "Boy": "Хлопчик", "Girl": "Дівчинка", "Red & white": "Рудо-білий", "Tricolour": "Триколор", "Red": "Рудий", "Sable": "Соболиний", "Available": "Вільний", "Calm and curious. Sits for a treat before you even ask.": "Спокійний і допитливий. Сідає за смаколик, ще до того, як попросиш.", "Calm and curious. Sits for a treat before you even ask. Steady and people-focused — the easy first dog.": "Спокійний і допитливий. Сідає за смаколик, ще до того, як попросиш. Врівноважений і орієнтований на людей — ідеальний перший пес.", "Gentle cuddler. Happiest wrapped in a soft blanket.": "Ніжний обіймашка. Найщасливіший, загорнутий у м'який плед.", "Gentle cuddler. Happiest wrapped in a soft blanket. Loves a lap; settles fast in a busy home.": "Ніжний обіймашка. Найщасливіший, загорнутий у м'який плед. Любить коліна; швидко звикає в гамірному домі.", "Thoughtful and independent. Guards her bone like treasure.": "Вдумлива й незалежна. Береже свою кісточку, як скарб.", "Thoughtful and independent. Guards her bone like treasure. Independent thinker, careful and clever.": "Вдумлива й незалежна. Береже свою кісточку, як скарб. Мислить самостійно, обережна й кмітлива.", "Head-tilt champion. Listens to every word you say.": "Чемпіонка нахилу голови. Слухає кожне ваше слово.", "Head-tilt champion. Listens to every word you say. Reads faces; picks up new words quickly.": "Чемпіонка нахилу голови. Слухає кожне ваше слово. Читає емоції; швидко вивчає нові слова.", "Quiet observer. Settles into new places with ease.": "Тихий спостерігач. Легко звикає до нових місць.", "Quiet observer. Settles into new places with ease. Unflappable; happy in a flat or a garden.": "Тихий спостерігач. Легко звикає до нових місць. Незворушний; щасливий і в квартирі, і в саду.", "Pure energy. Never says no to a walk or a game.": "Суцільна енергія. Ніколи не відмовиться від прогулянки чи гри.", "Pure energy. Never says no to a walk or a game. For active people — long walks and fetch.": "Суцільна енергія. Ніколи не відмовиться від прогулянки чи гри. Для активних людей — довгі прогулянки й апорт.", "Soft-hearted homebody. Always finds the comfiest spot.": "М'якосерда домосідка. Завжди знаходить найзатишніше місце.", "Soft-hearted homebody. Always finds the comfiest spot. The comfiest-spot finder; soft and gentle.": "М'якосерда домосідка. Завжди знаходить найзатишніше місце. Шукачка затишку; ніжна й лагідна.", "Playful and bold. Never lets go of the tug toy first.": "Грайлива й смілива. Ніколи першою не відпускає канат.", "Playful and bold. Never lets go of the tug toy first. Bold and playful; a born tug champion.": "Грайлива й смілива. Ніколи першою не відпускає канат. Народжена чемпіонка з перетягування.", "Litter J · 8 puppies": "Виводок J · 8 цуценят", "Hover a puppy to meet them": "Наведіть на цуценя, щоб познайомитися", "CONTACT": "ЗВ’ЯЖІТЬСЯ", "US": "З НАМИ", "Welsh Corgi Ukraine": "Welsh Corgi Ukraine", "Pembroke Welsh Corgi breeder": "Розплідник вельш-коргі пемброк", "Contact": "Контакти", "Follow": "Ми в мережах", "© 2026 Welsh Corgi Ukraine · Olena · Portfolio Design Concept": "© 2026 Welsh Corgi Ukraine · Олена · Портфоліо-концепт", "Privacy Policy": "Політика конфіденційності", "Terms of Service": "Умови використання", "Cookie Policy": "Політика cookie", "PUPPY INQUIRY": "ЗАПИТ НА ЦУЦЕНЯ", "Tell us about your dream corgi": "Розкажіть про коргі своєї мрії", "Fill this in and Olena will get back to you personally within a day.": "Заповніть форму — і Олена особисто відповість вам протягом доби.", "Name": "Ім'я", "Email or phone": "Email або телефон", "Preferred puppy": "Бажане цуценя", "No preference": "Без побажань", "I don't know yet": "Ще не знаю", "Message": "Повідомлення", "Send Inquiry": "Надіслати запит", "Thank you!": "Дякуємо!", "Your inquiry has been sent. Olena usually replies within a day.": "Ваш запит надіслано. Олена зазвичай відповідає протягом доби.", "Boy · 8 weeks old": "Хлопчик · 8 тижнів", "Character": "Характер", "Loves to do": "Любить", "Favorite food": "Улюблена їжа", "LEGAL": "ЮРИДИЧНЕ", "This Privacy Policy explains what information is collected on this site and how it is used. Last updated: 2026.": "Ця політика пояснює, яка інформація збирається на сайті і як вона використовується. Оновлено: 2026.", "What we collect": "Що ми збираємо", "When you submit the Puppy Inquiry form, we collect the name, contact details (email or phone) and any message you choose to share. We do not collect this information anywhere else on the site, and no automatic tracking of visitors takes place.": "Коли ви надсилаєте форму запиту на цуценя, ми отримуємо ім'я, контакти (email або телефон) і повідомлення, яким ви вирішили поділитися. Більше ніде на сайті ці дані не збираються, і автоматичного відстеження відвідувачів немає.", "How it's used": "Як це використовується", "Information submitted through the inquiry form is used solely to respond to your enquiry about a puppy. It is not sold, rented, or shared with third parties for marketing purposes.": "Дані з форми використовуються лише для відповіді на ваш запит про цуценя. Вони не продаються, не здаються в оренду й не передаються третім особам для маркетингу.", "Data storage & requests": "Зберігання даних і запити", "Your details are kept only as long as needed to handle your enquiry. You can request that your information be corrected or deleted at any time by contacting us directly.": "Ваші дані зберігаються лише стільки, скільки потрібно для обробки запиту. Ви будь-коли можете попросити виправити або видалити їх, написавши нам.", "Questions about this policy can be sent to hello@welshcorgi.ua.": "Запитання щодо цієї політики надсилайте на hello@welshcorgi.ua.", "By using this website, you agree to the following terms. Last updated: 2026.": "Користуючись сайтом, ви погоджуєтеся з наведеними умовами. Оновлено: 2026.", "Content": "Вміст", "All text, photos and pedigree information on this site describe our corgi litters as accurately as possible at the time of publishing. Availability, colors and prices are subject to change without notice.": "Усі тексти, фото й родоводи на сайті якомога точніше описують наші виводки на момент публікації. Наявність, окраси й ціни можуть змінюватися без попередження.", "Not a guarantee": "Не гарантія", "Submitting a Puppy Inquiry does not reserve a specific puppy. Reservations are only confirmed directly with the breeder, following our usual process (meeting, deposit, and paperwork).": "Запит на цуценя не бронює конкретне цуценя. Бронювання підтверджується лише напряму із заводчиком за звичною процедурою (знайомство, завдаток і документи).", "Intellectual property": "Інтелектуальна власність", "Photos and copy on this site belong to Welsh Corgi Ukraine and may not be reused without permission.": "Фото й тексти на сайті належать Welsh Corgi Ukraine і не можуть використовуватися без дозволу.", "Liability": "Відповідальність", "We do our best to keep this site accurate and up to date, but information may occasionally lag behind real litter availability.": "Ми стараємося підтримувати сайт точним і актуальним, але інформація часом може відставати від реальної наявності цуценят.", "This website does not use cookies.": "Цей сайт не використовує cookie.", "We don't use analytics cookies, advertising cookies, or any third-party tracking scripts. Nothing is stored in your browser when you visit this site beyond what your browser itself keeps locally to make the page function (for example, remembering your scroll position).": "Ми не використовуємо аналітичні чи рекламні cookie та сторонні скрипти відстеження. У вашому браузері нічого не зберігається, крім того, що він сам тримає локально для роботи сторінки (наприклад, позиції прокрутки).", "If this ever changes in the future, this page will be updated to reflect exactly what is used and why, along with a way to opt out.": "Якщо колись це зміниться, ми оновимо цю сторінку: що саме використовується, навіщо і як від цього відмовитися.", "@placeholder:Enter password": "Введіть пароль", "@aria-label:Back to top": "Нагору", "@aria-label:Open menu": "Відкрити меню", "@alt:Olena with her corgi": "Олена зі своїм коргі", "@aria-label:Next dog": "Наступний пес", "@aria-label:Next puppy": "Наступне цуценя", "@aria-label:Previous puppy": "Попереднє цуценя", "@aria-label:Puppy inquiry form": "Форма запиту на цуценя", "@aria-label:Close": "Закрити", "@aria-label:Close menu": "Закрити меню", "@alt:Corgi puppy": "Цуценя коргі", "@placeholder:Your name": "Ваше ім'я", "@placeholder:How can we reach you?": "Як з вами зв'язатися?", "@placeholder:Tell us a little about yourself and your home": "Розкажіть трохи про себе й свій дім", "@aria-label:Puppy profile": "Профіль цуценяти", "@aria-label:Privacy Policy": "Політика конфіденційності", "@aria-label:Terms of Service": "Умови використання", "@aria-label:Cookie Policy": "Політика cookie", "@alt:Corgi puppy sitting on a wooden stool": "Цуценя коргі на дерев'яному табуреті", "@alt:Tricolor corgi puppy peeking out of a wicker basket": "Цуценя-триколор визирає з плетеного кошика", "@alt:Corgi puppy on a ceramic pedestal eyeing a chew bone": "Цуценя на керамічному постаменті дивиться на кісточку", "@alt:Corgi puppy tilting its head at a red ball": "Цуценя нахиляє голову до червоного м'ячика", "@alt:Corgi puppy sitting on a white block": "Цуценя коргі сидить на білому кубі", "@alt:Corgi puppy trotting with a rope toy in its mouth": "Цуценя біжить з канатом у зубах", "@alt:Tricolor corgi puppy on a green velvet cushion": "Цуценя-триколор на зеленій оксамитовій подушці", "@alt:Corgi puppy playing tug-of-war with a rope": "Цуценя грає в перетягування каната", "@aria-label:Puppy Inquiry about Pixel": "Запит на цуценя Pixel", "@aria-label:Puppy Inquiry about Bruno": "Запит на цуценя Bruno", "@aria-label:Puppy Inquiry about Ginger": "Запит на цуценя Ginger", "@aria-label:Puppy Inquiry about Biscuit": "Запит на цуценя Biscuit", "@aria-label:Puppy Inquiry about Nugget": "Запит на цуценя Nugget", "@aria-label:Puppy Inquiry about Rocket": "Запит на цуценя Rocket", "@aria-label:Puppy Inquiry about Luna": "Запит на цуценя Luna", "@aria-label:Puppy Inquiry about Toffee": "Запит на цуценя Toffee"};
+    const UK = {"CORGI": "КОРГІ", "Work in progress": "Сайт у розробці", "Enter": "Увійти", "Wrong password — try again": "Невірний пароль — спробуйте ще", "Home": "Головна", "Click a puppy to meet them": "Натисніть на цуценя, щоб познайомитися", "Swipe to see them all": "Гортайте, щоб побачити всіх", "Reserved": "Заброньований", "Some photos and videos on this site were made with the help of AI, to show our dogs and their everyday life. We're happy to confirm any facts or answer any question —": "Деякі фото й відео на сайті створені за допомогою ШІ, щоб показати наших собак і їхнє повсякденне життя. Ми з радістю підтвердимо будь-які факти чи відповімо на будь-яке запитання —", "just ask": "просто напишіть нам", "sunset walks in the meadows": "прогулянки луками на заході сонця", "evenings on the velvet sofa": "вечори на оксамитовому дивані", "brunch on the sofa, shades on": "бранч на дивані в сонцезахисних окулярах", "floating on the donut ring": "плавати на надувному пончику", "skateboarding along Bondi": "кататися на скейті вздовж Бонді", "lazy Sundays with her brother": "ліниві неділі з братом", "chasing kites over the dunes": "ганятися за повітряними зміями на дюнах", "road trips in the convertible": "подорожі в кабріолеті", "poolside afternoons by the sea": "полудні біля басейну з видом на море", "About": "Про нас", "Parents": "Батьки", "Puppies": "Цуценята", "Reviews": "Відгуки", "PEMBROKE WELSH CORGI": "ВЕЛШ-КОРГІ ПЕМБРОК", "BREEDER.": "РОЗПЛІДНИК.", "Find your perfect Pembroke Welsh Corgi.": "Знайдіть свого ідеального вельш-коргі пемброк.", "Puppy Inquiry": "Запит на цуценя", "MEET": "ПРИВІТ,", "OLENA": "Я ОЛЕНА", "I'm a dedicated Corgi breeder who believes every puppy deserves the best start in life.": "Я заводчиця коргі, яка вірить, що кожне цуценя заслуговує на найкращий старт у житті.", "Health, temperament, and love — these are the values behind everything I do.": "Здоров'я, характер і любов — цінності, на яких тримається все, що я роблю.", "Years": "Років", "Families": "Родин", "Medals": "Медалей", "PROCESS": "ПРОЦЕС", "Deposit €300 · papers, chip & vaccinations included": "Завдаток €300 · документи, чип і щеплення включено", "Step 01": "Крок 01", "Step 02": "Крок 02", "Step 03": "Крок 03", "Step 04": "Крок 04", "inquiry": "запит", "meet & match": "знайомство", "reservation": "бронювання", "going home": "додому", "Tell us about you and your home. We reply within a day with the puppies that fit — and answer every question.": "Розкажіть про себе й свій дім. Протягом доби ми відповімо, які цуценята вам підходять, — і на всі запитання.", "A video call with the litter and the parents. We match temperament to your life, not just looks.": "Відеодзвінок із цуценятами та їхніми батьками. Ми підбираємо характер під ваше життя, а не лише зовнішність.", "A €300 deposit holds your puppy. Weekly photos, videos and health updates until you meet.": "Завдаток €300 закріплює цуценя за вами. Щотижня — фото, відео й новини про здоров'я до зустрічі.", "At 8 weeks: papers, vaccinations, chip. Pickup in Kyiv or delivery to your door, with lifelong support.": "У 8 тижнів: документи, щеплення, чип. Самовивіз у Києві або доставка до дверей — і підтримка на все життя.", "YOU GET": "ПЕРЕВАГИ", "all included": "все включено", "Every puppy leaves with papers, ID, vaccinations and a way home — nothing is sold as an extra": "Кожне цуценя їде додому з документами, чипом, щепленнями й доставкою — нічого не продається окремо", "vet passport": "ветпаспорт", "chip / tattoo": "чип / тату", "ksu / fci papers": "документи ксу / fci", "delivery": "доставка", "Full vaccination record, deworming schedule and a vet check before the move.": "Усі щеплення, графік дегельмінтизації та огляд ветеринара перед переїздом.", "Breeding-standard ID, registered to you on the day of handover.": "Ідентифікація за племінним стандартом, оформлена на вас у день передачі.", "Official KSU pedigree, recognised by the FCI worldwide — ready for shows and breeding.": "Офіційний родовід КСУ, визнаний FCI у всьому світі, — для виставок і розведення.", "Across Ukraine & abroad with a trusted carrier, and updates all the way.": "По Україні та за кордон із перевіреним перевізником і новинами всю дорогу.", "WHAT DO": "ЩО ВИ", "U GET": "ОТРИМУЄТЕ", "Vet Passport": "Ветпаспорт", "Full vaccination record": "Усі щеплення", "Chip / Tattoo": "Чип / тату", "Breeding standard ID": "Племінна ідентифікація", "KSU / FCI Papers": "Документи КСУ / FCI", "Official pedigree": "Офіційний родовід", "Delivery": "Доставка", "Ukraine & abroad": "Україна й за кордон", "PARENTS": "БАТЬКИ", "Born": "Народження", "Titles": "Титули", "Health": "Здоров'я", "Grandsire · Sire's father": "Дід · батько тата", "Grandsire · Dam's father": "Дід · батько мами", "Granddam · Dam's mother": "Бабуся · мама мами", "Sire": "Тато", "Dam": "Мама", "HD-A · full dentition": "HD-A · повна зубна формула", "BEST IN": "НАЙКРАЩІ", "SHOW": "НА ШОУ", "CACIB Kyiv · Best of Breed": "CACIB Київ · Найкращий представник породи", "Mar 2025": "берез. 2025", "Best of Breed": "Найкращий представник породи", "Corgi Club Specialty, Lviv · Best Puppy": "Монопородна виставка, Львів · Найкраще цуценя", "Sep 2024": "верес. 2024", "Best Puppy in Show": "Найкраще цуценя виставки", "National Dog Show, Odesa · CAC": "Національна виставка, Одеса · CAC", "Jun 2024": "черв. 2024", "CAC · Best Female": "CAC · Найкраща сука", "Junior Champion of Ukraine": "Юний чемпіон України", "Jan 2024": "січ. 2024", "Junior Champion": "Юний чемпіон", "MEET THE": "НАШІ", "BEST KIDS": "МАЛЮКИ", "Champion": "Чемпіони", "Balanced": "Гармонійні", "Healthy": "Здорові", "Gentle": "Лагідні", "Bold stance · steady nerves": "Впевнена постава · міцні нерви", "Level topline · correct bite": "Рівна спина · правильний прикус", "HD-A parents · DM clear": "Батьки HD-A · DM clear", "Calm with kids · quick to learn": "Спокійні з дітьми · швидко вчаться", "GOOD": "ВАРТО", "TO KNOW": "ЗНАТИ", "Still unsure about something? Ask directly — a real answer beats a page of small print.": "Щось досі незрозуміло? Запитайте напряму — жива відповідь краща за сторінку дрібного шрифту.", "Ask a question": "Поставити запитання", "What vaccinations does the puppy have?": "Які щеплення має цуценя?", "By eight weeks the puppy has had two deworming courses and its first complex vaccination, entered in an international vet passport. The second shot falls three weeks later, already in your care — we send a written schedule and remind you when it is due.": "До восьми тижнів цуценя проходить два курси дегельмінтизації та отримує перше комплексне щеплення, внесене в міжнародний ветпаспорт. Друге щеплення — через три тижні, вже у вас: ми надішлемо графік і нагадаємо, коли прийде час.", "Can you deliver abroad?": "Чи доставляєте за кордон?", "Yes. Puppies from this kennel live in Germany, Poland, the UK, Canada and the UAE. Flights are booked as cabin baggage with a courier where the airline allows it. Export paperwork — rabies titre test, EU health certificate, TRACES — is prepared by us; the cost of transport is quoted separately and openly.": "Так. Цуценята з нашого розплідника живуть у Німеччині, Польщі, Великій Британії, Канаді та ОАЕ. Перельоти бронюємо в салоні з кур'єром, де це дозволяє авіакомпанія. Документи на виїзд — тест на титр антитіл до сказу, ветсертифікат ЄС, TRACES — готуємо ми; вартість перевезення вказуємо окремо й прозоро.", "What is included in the price?": "Що входить у вартість?", "KSU/FCI pedigree documents, vet passport with vaccinations, microchip, a starter pack of the food the puppy is used to, and health results for both parents. Nothing on that list is an upsell.": "Родовід КСУ/FCI, ветпаспорт зі щепленнями, мікрочип, стартовий набір звичного для цуценяти корму та результати тестів здоров'я обох батьків. Нічого з цього не доплачується окремо.", "Can I come and see the puppies?": "Чи можна приїхати подивитися на цуценят?", "After the third week, by appointment. Before that the litter is kept quiet for the mother's sake. If you cannot travel to Kyiv we do a live video call instead — no edited clips, just the puppies as they are that day.": "Після третього тижня, за домовленістю. До того виводок відпочиває заради спокою мами. Якщо не можете приїхати до Києва, зробимо живий відеодзвінок — без монтажу, цуценята такі, як є того дня.", "How long is the waiting list?": "Скільки триває черга?", "Usually one to two litters ahead, which is three to eight months. A deposit reserves your place in the queue rather than a specific puppy, and it is fully refundable if nothing suits you when the litter arrives.": "Зазвичай на один–два виводки вперед, тобто три–вісім місяців. Завдаток бронює місце в черзі, а не конкретне цуценя, і повністю повертається, якщо з нового виводку вам ніхто не підійде.", "REVIEWS": "ВІДГУКИ", "FAMILIES WORLDWIDE": "РОДИНИ ПО ВСЬОМУ СВІТУ", "all over the world": "по всьому світу", "Our dogs have become happy members of families in Ukraine, across Europe and beyond.": "Наші собаки стали щасливими членами родин в Україні, по всій Європі й далеко за її межами.", "Spin the globe and hover a marker to meet the family": "Покрутіть глобус і наведіть на позначку, щоб познайомитися з родиною", "NOW LIVES IN": "ТЕПЕР ЖИВЕ В", "Lives with": "Живе з", "Age": "Вік", "Favourite thing": "Найбільше любить", "Kyiv, Ukraine": "Київ, Україна", "Berlin, Germany": "Берлін, Німеччина", "New York, USA": "Нью-Йорк, США", "São Paulo, Brazil": "Сан-Паулу, Бразилія", "Sydney, Australia": "Сідней, Австралія", "Tokyo, Japan": "Токіо, Японія", "Cape Town, S. Africa": "Кейптаун, ПАР", "London, UK": "Лондон, Велика Британія", "Toronto, Canada": "Торонто, Канада", "Dubai, UAE": "Дубай, ОАЕ", "1 year old": "1 рік", "2 years old": "2 роки", "3 years old": "3 роки", "4 years old": "4 роки", "5 years old": "5 років", "the Kovalenko family": "родина Коваленків", "Anna & Jonas": "Анна та Йонас", "the Ramirez family": "родина Рамірес", "Beatriz & her two kids": "Беатріс і двоє її дітей", "the Hartley family": "родина Гартлі", "Yuki & Haruto": "Юкі та Харуто", "the Nkosi family": "родина Нкосі", "Eleanor & Tom": "Елеонора та Том", "the Tremblay family": "родина Трамбле", "the Al-Farsi family": "родина Аль-Фарсі", "Sunday runs along the Dnipro": "недільні пробіжки вздовж Дніпра", "stealing socks before breakfast": "красти шкарпетки до сніданку", "rooftop naps in the sun": "спати на даху під сонцем", "chasing the garden sprinkler": "ганятися за садовою поливалкою", "bodysurfing at Bondi": "бодисерфінг на Бонді", "riding in the bike basket": "кататися в кошику велосипеда", "hiking up Table Mountain": "походи на Столову гору", "guarding the Sunday roast": "охороняти недільну печеню", "snow — all of it, every winter": "сніг — увесь, щозими", "air-conditioned zoomies": "гасати під кондиціонером", " in ": " в ", "LIFE NEEDS": "СВІТУ ТРЕБА", "MORE CORGIS": "БІЛЬШЕ КОРГІ", "LET’S": "ЗНАЙДІМО", "FIND": "", "YOURS": "ВАШОГО", "Litter J · born May 2025": "Виводок J · народжені у травні 2025", "Boy": "Хлопчик", "Girl": "Дівчинка", "Red & white": "Рудо-білий", "Tricolour": "Триколор", "Red": "Рудий", "Sable": "Соболиний", "Available": "Вільний", "Calm and curious. Sits for a treat before you even ask.": "Спокійний і допитливий. Сідає за смаколик, ще до того, як попросиш.", "Calm and curious. Sits for a treat before you even ask. Steady and people-focused — the easy first dog.": "Спокійний і допитливий. Сідає за смаколик, ще до того, як попросиш. Врівноважений і орієнтований на людей — ідеальний перший пес.", "Gentle cuddler. Happiest wrapped in a soft blanket.": "Ніжний обіймашка. Найщасливіший, загорнутий у м'який плед.", "Gentle cuddler. Happiest wrapped in a soft blanket. Loves a lap; settles fast in a busy home.": "Ніжний обіймашка. Найщасливіший, загорнутий у м'який плед. Любить коліна; швидко звикає в гамірному домі.", "Thoughtful and independent. Guards her bone like treasure.": "Вдумлива й незалежна. Береже свою кісточку, як скарб.", "Thoughtful and independent. Guards her bone like treasure. Independent thinker, careful and clever.": "Вдумлива й незалежна. Береже свою кісточку, як скарб. Мислить самостійно, обережна й кмітлива.", "Head-tilt champion. Listens to every word you say.": "Чемпіонка нахилу голови. Слухає кожне ваше слово.", "Head-tilt champion. Listens to every word you say. Reads faces; picks up new words quickly.": "Чемпіонка нахилу голови. Слухає кожне ваше слово. Читає емоції; швидко вивчає нові слова.", "Quiet observer. Settles into new places with ease.": "Тихий спостерігач. Легко звикає до нових місць.", "Quiet observer. Settles into new places with ease. Unflappable; happy in a flat or a garden.": "Тихий спостерігач. Легко звикає до нових місць. Незворушний; щасливий і в квартирі, і в саду.", "Pure energy. Never says no to a walk or a game.": "Суцільна енергія. Ніколи не відмовиться від прогулянки чи гри.", "Pure energy. Never says no to a walk or a game. For active people — long walks and fetch.": "Суцільна енергія. Ніколи не відмовиться від прогулянки чи гри. Для активних людей — довгі прогулянки й апорт.", "Soft-hearted homebody. Always finds the comfiest spot.": "М'якосерда домосідка. Завжди знаходить найзатишніше місце.", "Soft-hearted homebody. Always finds the comfiest spot. The comfiest-spot finder; soft and gentle.": "М'якосерда домосідка. Завжди знаходить найзатишніше місце. Шукачка затишку; ніжна й лагідна.", "Playful and bold. Never lets go of the tug toy first.": "Грайлива й смілива. Ніколи першою не відпускає канат.", "Playful and bold. Never lets go of the tug toy first. Bold and playful; a born tug champion.": "Грайлива й смілива. Ніколи першою не відпускає канат. Народжена чемпіонка з перетягування.", "Litter J · 8 puppies": "Виводок J · 8 цуценят", "Hover a puppy to meet them": "Наведіть на цуценя, щоб познайомитися", "CONTACT": "ЗВ’ЯЖІТЬСЯ", "US": "З НАМИ", "Welsh Corgi Ukraine": "Welsh Corgi Ukraine", "Pembroke Welsh Corgi breeder": "Розплідник вельш-коргі пемброк", "Contact": "Контакти", "Follow": "Ми в мережах", "© 2026 Welsh Corgi Ukraine · Olena · Portfolio Design Concept": "© 2026 Welsh Corgi Ukraine · Олена · Портфоліо-концепт", "Privacy Policy": "Політика конфіденційності", "Terms of Service": "Умови використання", "Cookie Policy": "Політика cookie", "PUPPY INQUIRY": "ЗАПИТ НА ЦУЦЕНЯ", "Tell us about your dream corgi": "Розкажіть про коргі своєї мрії", "Fill this in and Olena will get back to you personally within a day.": "Заповніть форму — і Олена особисто відповість вам протягом доби.", "Name": "Ім'я", "Email or phone": "Email або телефон", "Preferred puppy": "Бажане цуценя", "No preference": "Без побажань", "I don't know yet": "Ще не знаю", "Message": "Повідомлення", "Send Inquiry": "Надіслати запит", "Thank you!": "Дякуємо!", "Your inquiry has been sent. Olena usually replies within a day.": "Ваш запит надіслано. Олена зазвичай відповідає протягом доби.", "Boy · 8 weeks old": "Хлопчик · 8 тижнів", "Character": "Характер", "Loves to do": "Любить", "Favorite food": "Улюблена їжа", "LEGAL": "ЮРИДИЧНЕ", "This Privacy Policy explains what information is collected on this site and how it is used. Last updated: 2026.": "Ця політика пояснює, яка інформація збирається на сайті і як вона використовується. Оновлено: 2026.", "What we collect": "Що ми збираємо", "When you submit the Puppy Inquiry form, we collect the name, contact details (email or phone) and any message you choose to share. We do not collect this information anywhere else on the site, and no automatic tracking of visitors takes place.": "Коли ви надсилаєте форму запиту на цуценя, ми отримуємо ім'я, контакти (email або телефон) і повідомлення, яким ви вирішили поділитися. Більше ніде на сайті ці дані не збираються, і автоматичного відстеження відвідувачів немає.", "How it's used": "Як це використовується", "Information submitted through the inquiry form is used solely to respond to your enquiry about a puppy. It is not sold, rented, or shared with third parties for marketing purposes.": "Дані з форми використовуються лише для відповіді на ваш запит про цуценя. Вони не продаються, не здаються в оренду й не передаються третім особам для маркетингу.", "Data storage & requests": "Зберігання даних і запити", "Your details are kept only as long as needed to handle your enquiry. You can request that your information be corrected or deleted at any time by contacting us directly.": "Ваші дані зберігаються лише стільки, скільки потрібно для обробки запиту. Ви будь-коли можете попросити виправити або видалити їх, написавши нам.", "Questions about this policy can be sent to hello@welshcorgi.ua.": "Запитання щодо цієї політики надсилайте на hello@welshcorgi.ua.", "By using this website, you agree to the following terms. Last updated: 2026.": "Користуючись сайтом, ви погоджуєтеся з наведеними умовами. Оновлено: 2026.", "Content": "Вміст", "All text, photos and pedigree information on this site describe our corgi litters as accurately as possible at the time of publishing. Availability, colors and prices are subject to change without notice.": "Усі тексти, фото й родоводи на сайті якомога точніше описують наші виводки на момент публікації. Наявність, окраси й ціни можуть змінюватися без попередження.", "Not a guarantee": "Не гарантія", "Submitting a Puppy Inquiry does not reserve a specific puppy. Reservations are only confirmed directly with the breeder, following our usual process (meeting, deposit, and paperwork).": "Запит на цуценя не бронює конкретне цуценя. Бронювання підтверджується лише напряму із заводчиком за звичною процедурою (знайомство, завдаток і документи).", "Intellectual property": "Інтелектуальна власність", "Photos and copy on this site belong to Welsh Corgi Ukraine and may not be reused without permission.": "Фото й тексти на сайті належать Welsh Corgi Ukraine і не можуть використовуватися без дозволу.", "Liability": "Відповідальність", "We do our best to keep this site accurate and up to date, but information may occasionally lag behind real litter availability.": "Ми стараємося підтримувати сайт точним і актуальним, але інформація часом може відставати від реальної наявності цуценят.", "This website does not use cookies.": "Цей сайт не використовує cookie.", "We don't use analytics cookies, advertising cookies, or any third-party tracking scripts. Nothing is stored in your browser when you visit this site beyond what your browser itself keeps locally to make the page function (for example, remembering your scroll position).": "Ми не використовуємо аналітичні чи рекламні cookie та сторонні скрипти відстеження. У вашому браузері нічого не зберігається, крім того, що він сам тримає локально для роботи сторінки (наприклад, позиції прокрутки).", "If this ever changes in the future, this page will be updated to reflect exactly what is used and why, along with a way to opt out.": "Якщо колись це зміниться, ми оновимо цю сторінку: що саме використовується, навіщо і як від цього відмовитися.", "@placeholder:Enter password": "Введіть пароль", "@aria-label:Back to top": "Нагору", "@aria-label:Open menu": "Відкрити меню", "@alt:Olena with her corgi": "Олена зі своїм коргі", "@aria-label:Next dog": "Наступний пес", "@aria-label:Next puppy": "Наступне цуценя", "@aria-label:Previous puppy": "Попереднє цуценя", "@aria-label:Puppy inquiry form": "Форма запиту на цуценя", "@aria-label:Close": "Закрити", "@aria-label:Close menu": "Закрити меню", "@alt:Corgi puppy": "Цуценя коргі", "@placeholder:Your name": "Ваше ім'я", "@placeholder:How can we reach you?": "Як з вами зв'язатися?", "@placeholder:Tell us a little about yourself and your home": "Розкажіть трохи про себе й свій дім", "@aria-label:Puppy profile": "Профіль цуценяти", "@aria-label:Privacy Policy": "Політика конфіденційності", "@aria-label:Terms of Service": "Умови використання", "@aria-label:Cookie Policy": "Політика cookie", "@alt:Corgi puppy sitting on a wooden stool": "Цуценя коргі на дерев'яному табуреті", "@alt:Tricolor corgi puppy peeking out of a wicker basket": "Цуценя-триколор визирає з плетеного кошика", "@alt:Corgi puppy on a ceramic pedestal eyeing a chew bone": "Цуценя на керамічному постаменті дивиться на кісточку", "@alt:Corgi puppy tilting its head at a red ball": "Цуценя нахиляє голову до червоного м'ячика", "@alt:Corgi puppy sitting on a white block": "Цуценя коргі сидить на білому кубі", "@alt:Corgi puppy trotting with a rope toy in its mouth": "Цуценя біжить з канатом у зубах", "@alt:Tricolor corgi puppy on a green velvet cushion": "Цуценя-триколор на зеленій оксамитовій подушці", "@alt:Corgi puppy playing tug-of-war with a rope": "Цуценя грає в перетягування каната", "@aria-label:Puppy Inquiry about Pixel": "Запит на цуценя Pixel", "@aria-label:Puppy Inquiry about Bruno": "Запит на цуценя Bruno", "@aria-label:Puppy Inquiry about Ginger": "Запит на цуценя Ginger", "@aria-label:Puppy Inquiry about Biscuit": "Запит на цуценя Biscuit", "@aria-label:Puppy Inquiry about Nugget": "Запит на цуценя Nugget", "@aria-label:Puppy Inquiry about Rocket": "Запит на цуценя Rocket", "@aria-label:Puppy Inquiry about Luna": "Запит на цуценя Luna", "@aria-label:Puppy Inquiry about Toffee": "Запит на цуценя Toffee"};
     const lang = document.documentElement.getAttribute('data-lang') || 'en';
     window.t = s => (lang === 'uk' && UK[s] !== undefined) ? UK[s] : s;
     if (lang === 'uk') {
@@ -2906,6 +2948,7 @@
     // plain seek is all it takes.
     function pPrime(){
       if (pPrimed) return;
+      if (window.matchMedia('(max-width:768px)').matches) return;   // phones play the clip instead
       pReadDuration();
       if (!pDuration) return;
       pPrimed = true;
@@ -2917,7 +2960,7 @@
 
     // Fallback for browsers that won't seek until the clip has been played.
     setTimeout(() => {
-      if (pPrimed) return;
+      if (pPrimed || window.matchMedia('(max-width:768px)').matches) return;
       const pr = puppiesVideo.play();
       if (pr && pr.then) {
         pr.then(() => { pPrimed = true; puppiesVideo.pause(); }).catch(() => {});
@@ -3849,6 +3892,7 @@
       const lines = heading.querySelectorAll('.line');
       const toys = heading.querySelectorAll('.seat-toy');
       const hr = heading.getBoundingClientRect();
+      const small = window.matchMedia('(max-width:768px)').matches ? 0.72 : 1;
       toys.forEach((toy, k) => {
         const c = seats[k]; const line = lines[c && c.line];
         if (!c || !line) return;
@@ -3872,7 +3916,7 @@
         const asc = m.fontBoundingBoxAscent || fs * .8, desc = m.fontBoundingBoxDescent || fs * .2;
         const base = lr.top - hr.top + (lr.height + asc - desc) / 2;   // baseline in the heading
         const inkTop = base - m.actualBoundingBoxAscent;
-        const w = fs * c.w, cx = chX + chW / 2 + fs * c.dx;
+        const w = fs * c.w * small, cx = chX + chW / 2 + fs * c.dx;
         const st = toy.style;
         st.width = w.toFixed(1) + 'px'; st.top = st.bottom = 'auto';
         if (c.mode === 'top') {
@@ -3912,25 +3956,82 @@
     });
   })();
 
-  // ================= LET'S FIND YOURS: accordion cards + arrow =================
-  // Point at a puppy and its card opens at once; move off and it folds back.
-  // When one card folds while the next unfolds, the strip is nudged so the
-  // card under the pointer stays exactly under it (otherwise the row would
-  // slide and open the neighbour instead). Only real mouse moves open cards,
-  // so the strip moving by itself never pops one open under a resting cursor.
-  // The arrow steps one puppy along and wraps round at the end.
+  // ================= THE LITTER GALLERY: cards, arrows, dots, counter =================
+  // • Every card carries its number (01–08) and its status on the photo.
+  // • Desktop: a click opens a puppy (accordion — the details unfold beside
+  //   the photo) and it stays open until another is chosen; exactly one card
+  //   is open at a time, Pixel to begin with. The arrows (and ← → keys) step
+  //   to the previous / next puppy, open it and glide it into view; pointing
+  //   at an arrow still lets the strip drift that way.
+  // • Phones / tablets: one card at a time, swiped with snapping.
+  // • Under the strip: "03 / 08 · Name" and a row of dots, one per puppy.
   (function(){
     const strip = document.getElementById('agStrip');
     const next = document.getElementById('findNext');
+    const prev = document.getElementById('findPrev');
     if (!strip) return;
     const coarse = window.matchMedia('(pointer: coarse)').matches;
+    const tt = (window.t || (x => x));
+    const items = () => [...strip.querySelectorAll('.ag-item')];
+    const list0 = items(), N = list0.length;
+    const pad2 = n => String(n).padStart(2, '0');
 
-    let open = null, anchorRun = 0, moving = 0;      // moving: the strip is gliding / drifting
+    // ---- number and status on every photo ----
+    list0.forEach((it, i) => {
+      const ph = it.querySelector('.ag-photo'); if (!ph) return;
+      const num = document.createElement('span'); num.className = 'ag-num'; num.textContent = pad2(i + 1);
+      const facts = it.querySelector('.ag-more-facts');
+      const status = (it.dataset.status || (facts && /reserved/i.test(facts.textContent) ? 'Reserved' : 'Available'));
+      const st = document.createElement('span'); st.className = 'ag-status is-' + status.toLowerCase(); st.textContent = tt(status);
+      ph.appendChild(num); ph.appendChild(st);
+    });
+
+    // ---- counter and dots under the strip ----
+    const nav = document.createElement('div'); nav.className = 'fy-nav';
+    nav.innerHTML = '<span class="fy-count"><b>01</b> / ' + pad2(N) + ' <i></i></span><span class="fy-dots" role="tablist"></span>';
+    const dotsBox = nav.querySelector('.fy-dots');
+    list0.forEach((it, i) => {
+      const d = document.createElement('button'); d.type = 'button'; d.className = 'fy-dot';
+      d.setAttribute('aria-label', (it.dataset.name || ('Puppy ' + (i + 1))));
+      d.dataset.name = it.dataset.name || '';
+      d.addEventListener('click', () => go(i));
+      dotsBox.appendChild(d);
+    });
+    const bleed = strip.closest('.ag-bleed'); if (bleed) bleed.after(nav);
+    const hint = document.querySelector('#litterGallery .find-meta span:last-child');
+    if (hint) hint.textContent = tt(coarse ? 'Swipe to see them all' : 'Click a puppy to meet them');
+    function mark(i){
+      const it = items()[i]; if (!it) return;
+      nav.querySelector('.fy-count b').textContent = pad2(i + 1);
+      nav.querySelector('.fy-count i').textContent = '· ' + (it.dataset.name || '');
+      dotsBox.querySelectorAll('.fy-dot').forEach((d, k) => d.classList.toggle('is-on', k === i));
+    }
+
+    // ---- smooth glide (shared by everything that moves the strip) ----
+    let anchorRun = 0, moving = 0, glideRun = 0;
+    const easeOut = t => 1 - Math.pow(1 - t, 4);                 // ≈ cubic-bezier(.22,1,.36,1)
+    function glideTo(target, ms){
+      const id = ++glideRun; anchorRun++;
+      const from = strip.scrollLeft, max = strip.scrollWidth - strip.clientWidth;
+      target = Math.max(0, Math.min(max, target));
+      const t0 = performance.now(), dur = ms || Math.min(1400, 650 + Math.abs(target - from) * 0.45);
+      moving++;
+      strip.style.scrollSnapType = 'none';                         // no snapping mid-glide
+      (function step(now){
+        if (id !== glideRun) { moving = Math.max(0, moving - 1); return; }
+        const k = Math.min(1, (now - t0) / dur);
+        strip.scrollLeft = from + (target - from) * easeOut(k);
+        if (k < 1) requestAnimationFrame(step);
+        else { moving = Math.max(0, moving - 1); strip.style.scrollSnapType = ''; }
+      })(t0);
+    }
+
+    // ---- desktop accordion ----
+    let open = null, openIdx = 0;
+    const GAP = () => parseFloat(getComputedStyle(strip).columnGap || getComputedStyle(strip).gap) || 8;
     function keepInPlace(item){
-      if (moving) return;                             // never fight a glide or a drift
-      const id = ++anchorRun;
-      const startLeft = item.getBoundingClientRect().left;
-      const t0 = performance.now();
+      if (moving) return;
+      const id = ++anchorRun, startLeft = item.getBoundingClientRect().left, t0 = performance.now();
       (function step(now){
         if (id !== anchorRun || moving) return;
         const d = item.getBoundingClientRect().left - startLeft;
@@ -3938,101 +4039,82 @@
         if (now - t0 < 650) requestAnimationFrame(step);
       })(t0);
     }
-    function set(item){
+    function set(item, anchor){
       if (item === open) return;
-      if (open) open.classList.remove('is-open');
+      strip.querySelectorAll('.ag-item.is-open').forEach(el => { if (el !== item) el.classList.remove('is-open'); });
       open = item;
-      if (open) { open.classList.add('is-open'); keepInPlace(open); }
+      if (open) { open.classList.add('is-open'); if (anchor) keepInPlace(open); }
     }
-    // touch screens: no accordion — each card shows its name, words and button (CSS)
-    // one card stands open from the start (Pixel), as the globe opens on
-    // New York; pointing at another opens that one, leaving the strip goes
-    // back to Pixel
-    const home = () => strip.querySelector('.ag-item[data-name="Pixel"]');
-    function rest(){
-      const h = home(); if (!h || h === open) return;
-      if (open) open.classList.remove('is-open');
-      open = h; h.classList.add('is-open');
-    }
-    if (!coarse) {
-      rest();
-      strip.addEventListener('mousemove', (e) => {
-        if (!e.movementX && !e.movementY) return;
-        const it = e.target.closest('.ag-item');
-        if (it) set(it);
-      });
-      strip.addEventListener('mouseleave', (e) => {
-        const pv = document.getElementById('findPrev');
-        if (e.relatedTarget && ((next && next.contains(e.relatedTarget)) || (pv && pv.contains(e.relatedTarget)))) return;   // over to an arrow: leave it as it is
-        anchorRun++; rest();
-      });
+    // where card i will sit once it alone is open: every card before it is closed
+    function finalLeft(i){
+      const first = items()[0];
+      const closedW = first && !first.classList.contains('is-open') ? first.offsetWidth : (items()[1] || first).offsetWidth;
+      return i * (closedW + GAP());
     }
 
-    // keep one card exactly in the middle, so the neighbours show the same half
-    const items = () => [...strip.querySelectorAll('.ag-item')];
-    const centreOf = it => it.offsetLeft - (strip.clientWidth - it.offsetWidth) / 2;
-    function centred(){
-      const list = items(), mid = strip.scrollLeft + strip.clientWidth / 2;
-      let best = 0, d = Infinity;
-      list.forEach((it, i) => { const c = Math.abs(it.offsetLeft + it.offsetWidth / 2 - mid); if (c < d) { d = c; best = i; } });
-      return best;
-    }
-    function goTo(i, smooth){
+    // go to puppy i: open it (desktop) and bring it into view
+    function go(i){
       const list = items(); if (!list.length) return;
-      const first = 1, last = Math.max(first, list.length - 2);     // a neighbour on each side
-      if (i > last) i = first; if (i < first) i = last;
-      strip.scrollTo({ left: Math.max(0, centreOf(list[i])), behavior: smooth ? 'smooth' : 'auto' });
+      i = (i + list.length) % list.length;
+      openIdx = i; mark(i);
+      if (!coarse && window.innerWidth > 1200) {
+        set(list[i], false);
+        // the card's final place and width are known: glide there in one move,
+        // the open card centred
+        glideTo(finalLeft(i) - Math.max(0, (strip.clientWidth - openWidthPx()) / 2));
+      } else {
+        const it = list[i];
+        glideTo(it.offsetLeft - (strip.clientWidth - it.offsetWidth) / 2);
+      }
     }
-    void goTo; void centred;
-    // ---- photos decoded before the strip is reached (no decode hitches mid-glide) ----
-    (function(){
-      const imgs = [...strip.querySelectorAll('.ag-photo img')];
-      const warm = () => imgs.forEach(im => { im.loading = 'eager'; if (im.decode) im.decode().catch(() => {}); });
-      if ('IntersectionObserver' in window) {
-        new IntersectionObserver((es, ob) => { if (es.some(e => e.isIntersecting)) { warm(); ob.disconnect(); } },
-          { rootMargin: '200% 0px' }).observe(strip);
-      } else warm();
-    })();
-    // ---- gliding: the strip moves with the same soft ease as the accordion ----
-    const easeOut = t => 1 - Math.pow(1 - t, 4);                 // ≈ cubic-bezier(.22,1,.36,1)
-    let glideRun = 0;
-    function glideTo(target, ms){
-      const id = ++glideRun; anchorRun++;
-      const from = strip.scrollLeft, max = strip.scrollWidth - strip.clientWidth;
-      target = Math.max(0, Math.min(max, target));
-      const t0 = performance.now(), dur = ms || Math.min(1400, 650 + Math.abs(target - from) * 0.45);
-      moving++;
-      (function step(now){
-        if (id !== glideRun) { moving = Math.max(0, moving - 1); return; }
-        const k = Math.min(1, (now - t0) / dur);
-        strip.scrollLeft = from + (target - from) * easeOut(k);
-        if (k < 1) requestAnimationFrame(step); else moving = Math.max(0, moving - 1);
-      })(t0);
+    function openWidthPx(){
+      // the open card = photo + the details panel (see the CSS rule for .is-open)
+      const lg = strip.closest('#litterGallery');
+      const fy = parseFloat(getComputedStyle(lg).getPropertyValue('--fy-w')) || 700;
+      return Math.min(strip.clientWidth, fy + Math.min(560, window.innerWidth * 0.42));
     }
-    if (next) next.addEventListener('click', () => {
-      const list = items(); if (!list.length) return;
-      const max = strip.scrollWidth - strip.clientWidth;
-      if (strip.scrollLeft >= max - 4) { glideTo(0); return; }       // back to the start
-      // the next card whose left edge is past the current view's left edge
-      const nextItem = list.find(it => it.offsetLeft > strip.scrollLeft + 4);
-      glideTo(nextItem ? nextItem.offsetLeft : max);
-    });
-    const prev = document.getElementById('findPrev');
-    if (prev) prev.addEventListener('click', () => {
-      const list = items(); if (!list.length) return;
-      const max = strip.scrollWidth - strip.clientWidth;
-      if (strip.scrollLeft <= 4) { glideTo(max); return; }            // from the start round to the end
-      // the last card whose left edge is before the current view's left edge
-      const before = list.filter(it => it.offsetLeft < strip.scrollLeft - 4);
-      glideTo(before.length ? before[before.length - 1].offsetLeft : 0);
-    });
-    // ---- pointing at an arrow sets the strip drifting that way, easing in and out ----
+
+    if (!coarse) {
+      // Pixel open from the start
+      set(list0[0], false); mark(0);
+      strip.addEventListener('click', (e) => {
+        if (e.target.closest('.ag-inq')) return;
+        const it = e.target.closest('.ag-item'); if (!it) return;
+        const i = items().indexOf(it);
+        if (it === open) return;
+        openIdx = i; mark(i);
+        set(it, true);
+        // if the open card would run past the right edge, glide it into view
+        setTimeout(() => {
+          const r = it.getBoundingClientRect(), sr = strip.getBoundingClientRect();
+          if (r.right > sr.right - 8) glideTo(strip.scrollLeft + (r.right - sr.right) + 24);
+          else if (r.left < sr.left) glideTo(strip.scrollLeft + (r.left - sr.left) - 24);
+        }, 620);
+      });
+    } else {
+      mark(0);
+      // the dots and counter follow the card nearest the middle while swiping
+      let raf = 0;
+      strip.addEventListener('scroll', () => {
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          const mid = strip.scrollLeft + strip.clientWidth / 2; let best = 0, d = Infinity;
+          items().forEach((it, k) => { const c = Math.abs(it.offsetLeft + it.offsetWidth / 2 - mid); if (c < d) { d = c; best = k; } });
+          if (best !== openIdx) { openIdx = best; mark(best); }
+        });
+      }, { passive:true });
+    }
+
+    // ---- arrows: click = previous / next puppy; pointing = drift ----
+    if (next) next.addEventListener('click', () => go(openIdx + 1));
+    if (prev) prev.addEventListener('click', () => go(openIdx - 1));
     if (next && !coarse) {
       let want = 0, vel = 0, last = 0, running = false, pos = 0;
-      const SPEED = 340;                                            // px per second at full drift
+      const SPEED = 340;
       function drift(now){
         const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60; last = now;
-        vel += (want - vel) * (1 - Math.pow(1 - 0.08, dt * 60));     // soft start and stop
+        vel += (want - vel) * (1 - Math.pow(1 - 0.08, dt * 60));
         const max = strip.scrollWidth - strip.clientWidth;
         const room = vel > 0 ? pos < max - 0.5 : pos > 0.5;
         if (Math.abs(vel) > 0.5 && room) { pos = Math.max(0, Math.min(max, pos + vel * dt)); strip.scrollLeft = pos; }
@@ -4043,10 +4125,30 @@
         glideRun++; anchorRun++; want = SPEED * dir;
         if (!running) { running = true; moving++; pos = strip.scrollLeft; requestAnimationFrame(drift); }
       };
-      next.addEventListener('mouseenter', start(1));
-      next.addEventListener('mouseleave', () => { want = 0; });
+      next.addEventListener('mouseenter', start(1)); next.addEventListener('mouseleave', () => { want = 0; });
       if (prev) { prev.addEventListener('mouseenter', start(-1)); prev.addEventListener('mouseleave', () => { want = 0; }); }
     }
+
+    // ---- keyboard: ← → while the gallery is on screen ----
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      if (document.body.style.overflow === 'hidden') return;           // a dialog is open
+      if (/^(INPUT|TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || '')) return;
+      const r = strip.getBoundingClientRect();
+      if (r.bottom < window.innerHeight * 0.3 || r.top > window.innerHeight * 0.7) return;
+      e.preventDefault();
+      go(openIdx + (e.key === 'ArrowRight' ? 1 : -1));
+    });
+
+    // ---- photos decoded before the strip is reached ----
+    (function(){
+      const imgs = [...strip.querySelectorAll('.ag-photo img')];
+      const warm = () => imgs.forEach(im => { im.loading = 'eager'; if (im.decode) im.decode().catch(() => {}); });
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver((es, ob) => { if (es.some(e => e.isIntersecting)) { warm(); ob.disconnect(); } },
+          { rootMargin: '200% 0px' }).observe(strip);
+      } else warm();
+    })();
   })();
 
   // ================= LET'S FIND YOURS: the ball rolls across and drops out =================
@@ -5748,8 +5850,9 @@
     }
 
     function build(){
-      // no ball on touch / small screens: just show the cut-outs with their pop
-      if (off()) { toys.forEach(t => setToy(t, true)); return; }
+      // touch / small screens: no ball — the cut-outs are still seated on the
+      // letters and pop in (see the end of the seating below)
+      const offNow = off();
       // measure with every letter back at rest, so a letter caught mid-lift
       // doesn't bend the route
       title.classList.add('is-measuring');
@@ -5848,6 +5951,7 @@
         }
       });
 
+      if (offNow) { toys.forEach(t => setToy(t, true)); return; }
       // where along the route the ball comes nearest each cut-out
       toys.forEach(t => {
         const r = t.el.getBoundingClientRect();
