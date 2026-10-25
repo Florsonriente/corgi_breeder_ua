@@ -1808,6 +1808,8 @@
     width:100%; height:100%; pointer-events:none;
   }
   body.ballcur-on{cursor:none;}
+  body.ballcur-on .modal-overlay.open, body.ballcur-on .modal-overlay.open *{cursor:auto;}
+  body.ballcur-on .modal-overlay.open input, body.ballcur-on .modal-overlay.open textarea{cursor:text;}
   body.ballcur-on a, body.ballcur-on button, body.ballcur-on .btn,
   body.ballcur-on input, body.ballcur-on select, body.ballcur-on textarea,
   body.ballcur-on label, body.ballcur-on [role="button"], body.ballcur-on .burger{cursor:auto;}
@@ -5399,7 +5401,10 @@
       const angle = spin * (1 - e);               // the real ball starts at 0
 
       const handing = t > 0 && t < 1;
-      const want = t < 1 && (handing || (hasPointer && !overUI)) ? 1 : 0;
+      // any dialog or the menu open: the ball steps aside and the normal
+      // pointer comes back, so forms can be used as usual
+      const dialogOpen = !!document.querySelector('.modal-overlay.open, .mobile-nav-overlay.open');
+      const want = !dialogOpen && t < 1 && (handing || (hasPointer && !overUI)) ? 1 : 0;
       alpha += (want - alpha) * 0.25;             // soft in / out instead of a pop
       if (Math.abs(want - alpha) < 0.01) alpha = want;
 
