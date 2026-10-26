@@ -797,7 +797,8 @@
   #litterGallery .ag-item.is-open .ag-photo::before{opacity:.35;}
   #litterGallery .ag-item{cursor:pointer;}
   /* dots under the strip, one per puppy */
-  .fy-nav{display:flex; align-items:center; justify-content:center; gap:22px; padding:clamp(14px, 2.6vh, 26px) 20px 0; flex-wrap:wrap;}
+  /* room below as well: the block clips its edges, and the active dot is drawn a little larger */
+  .fy-nav{display:flex; align-items:center; justify-content:center; gap:22px; padding:clamp(14px, 2.6vh, 26px) 20px clamp(16px, 2.6vh, 26px); flex-wrap:wrap;}
   .fy-dots{display:flex; gap:10px;}
   .fy-dot{
     width:10px; height:10px; padding:0; border:0; border-radius:50%; cursor:pointer;
