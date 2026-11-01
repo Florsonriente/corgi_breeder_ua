@@ -2060,12 +2060,16 @@
      ends just before the dog, the second starts just after, and both share
      one size that is as large as that space allows. Phones keep the usual
      stacked layout. */
-  /* the two words sit at the page margins, pushed apart (space-between):
-     the puppy has the whole middle, the line frames it from both sides */
+  /* the two words hug the dog: three columns — word · dog · word — with the
+     same gap on both sides, centred on the dog's own axis (the page's centre) */
   html.hero-fit .hero-content{
-    display:flex; justify-content:space-between; align-items:center;
-    padding:0 calc(40px + 1vw); width:100%; box-sizing:border-box;
+    display:grid; grid-template-columns:1fr var(--dog-w, 18vw) 1fr; column-gap:var(--dog-gap, 2.4vw);
+    align-items:center; padding:0; width:100%; box-sizing:border-box; translate:var(--dog-shift, 0px) 0;
   }
+  html.hero-fit .hero .hero-word[data-hero-word="1"]{grid-column:1; justify-self:end;}
+  html.hero-fit .hero .hero-word[data-hero-word="2"]{grid-column:3; justify-self:start;}
+  /* the line under the right word: text and button end where the "?" ends */
+  html.hero-fit .hero .hero-cta-cluster{right:var(--cta-right, 2.5vw);}
   html.hero-fit .hero .hero-word{font-size:var(--hero-fs, var(--text-display-size)); white-space:nowrap;}
 
 
@@ -2100,6 +2104,20 @@
   }
   .footer-ai-note a{color:#E8D9CF; text-decoration:underline; text-underline-offset:3px;}
   .footer-ai-note a:hover{color:#fff;}
+
+  /* ---------- header on desktop: three anchors on one line ----------
+     the breeder's name on the left page margin, the menu on the centre axis
+     (the same axis the dog stands on), the language on the right margin */
+  @media (min-width:1201px){
+    .header-inner{position:relative; justify-content:space-between; align-items:flex-start;}
+    header nav{position:absolute; left:50%; top:clamp(20px, 4vh, 40px); transform:translateX(-50%);}
+    header .header-lang{
+      margin:-14px -10px -14px auto;
+      font-weight:var(--text-accent-caps-weight) !important; font-size:var(--text-accent-caps-size) !important; line-height:inherit;
+      letter-spacing:var(--text-accent-caps-ls); text-transform:uppercase;
+    }
+  }
+  @media (max-width:1200px){ .header-inner > .header-lang{display:none;} }
 
   /* ---------- language switch (EN / UA) ---------- */
   .lang-switch{
@@ -2308,7 +2326,7 @@
     .header-inner{padding:16px 18px;}
   }
 </style>
-</head><body><button class="to-top" id="toTop" type="button" aria-label="Back to top"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button><header><div class="header-inner"><a class="header-brand" href="#hero" aria-label="Welsh Corgi Ukraine — home">PEMBROKE WELSH CORGI<br>BREEDER.</a><nav><a href="#about">About</a><a href="#parents">Parents</a><a href="#litterGallery">Puppies</a><a href="#globe">Reviews</a><button type="button" class="lang-switch" data-lang-toggle aria-label="Language / Мова"><span data-l="en">EN</span><i>/</i><span data-l="uk">UA</span></button></nav><button class="burger" id="burgerBtn" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button></div></header><div class="mobile-nav-overlay" id="mobileNavOverlay" aria-hidden="true"><button type="button" class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu"><span></span><span></span></button><nav class="mobile-nav"><a href="#hero">Home</a><a href="#about">About</a><a href="#parents">Parents</a><a href="#litterGallery">Puppies</a><a href="#globe">Reviews</a><button type="button" class="lang-switch" data-lang-toggle aria-label="Language / Мова"><span data-l="en">EN</span><i>/</i><span data-l="uk">UA</span></button></nav></div><!-- ================= HERO ================= --><section class="hero" id="hero"><div class="hero-video-bg" id="heroVideoBg"><video id="scrubVideo" muted playsinline preload="auto" poster="assets/hero_sit_poster.jpg"><source src="assets/hero_sit_hd.mp4" type="video/mp4"></video></div><script>
+</head><body><button class="to-top" id="toTop" type="button" aria-label="Back to top"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button><header><div class="header-inner"><a class="header-brand" href="#hero" aria-label="Welsh Corgi Ukraine — home">PEMBROKE WELSH CORGI<br>BREEDER.</a><nav><a href="#about">About</a><a href="#parents">Parents</a><a href="#litterGallery">Puppies</a><a href="#globe">Reviews</a></nav><button type="button" class="lang-switch header-lang" data-lang-toggle aria-label="Language / Мова"><span data-l="en">EN</span><i>/</i><span data-l="uk">UA</span></button><button class="burger" id="burgerBtn" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button></div></header><div class="mobile-nav-overlay" id="mobileNavOverlay" aria-hidden="true"><button type="button" class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu"><span></span><span></span></button><nav class="mobile-nav"><a href="#hero">Home</a><a href="#about">About</a><a href="#parents">Parents</a><a href="#litterGallery">Puppies</a><a href="#globe">Reviews</a><button type="button" class="lang-switch" data-lang-toggle aria-label="Language / Мова"><span data-l="en">EN</span><i>/</i><span data-l="uk">UA</span></button></nav></div><!-- ================= HERO ================= --><section class="hero" id="hero"><div class="hero-video-bg" id="heroVideoBg"><video id="scrubVideo" muted playsinline preload="auto" poster="assets/hero_sit_poster.jpg"><source src="assets/hero_sit_hd.mp4" type="video/mp4"></video></div><script>
   // editorial: the earlier hero clip (the dog seen side-on, scrubbed by the cursor)
   (function(){
     var v = document.getElementById('scrubVideo'); if (!v) return;
@@ -4439,7 +4457,9 @@
     if (!hero || words.length < 2) return;
     // where the dog is, as a share of the clip's width, in the band the words
     // sit in — the union over all head poses (measured from the frames)
-    const IW = 1920, IH = 1080, POS_Y = 0.45, DOG_L = 0.30, DOG_R = 0.70;   // incl. the nose when it looks hard left or right
+    // the grown dog (rest pose, measured from its frames) / the puppy (all head poses)
+    const DOG = (window.CORGI_SETTINGS || {}).HERO_CLIP === 'dog';
+    const IW = 1920, IH = 1080, POS_Y = 0.45, DOG_L = DOG ? 0.413 : 0.30, DOG_R = DOG ? 0.585 : 0.70;
     function layout(){
       if (window.matchMedia('(max-width:1200px)').matches) { root.classList.remove('hero-fit'); return; }
       const r = canvas.getBoundingClientRect();
@@ -4450,18 +4470,25 @@
       const gap = Math.max(16, r.width * 0.018), pad = Math.max(24, r.width * 0.035);
       root.style.setProperty('--dog-w', Math.max(0, Rr - L).toFixed(1) + 'px');
       root.style.setProperty('--dog-gap', gap.toFixed(1) + 'px');
-      // Full statement size (as "Meet Olena" and every other heading); the
-      // words sit at the page margins (space-between). They only shrink if
-      // the two together would leave less than the puppy's face between them.
+      // Full statement size; the words hug the dog with one equal gap on each
+      // side, and only shrink if a word would run past the page margin.
+      const hr = hero.getBoundingClientRect();
+      const g = Math.max(20, r.width * 0.024), margin = Math.max(24, r.width * 0.03);
+      const mid = (L + Rr) / 2;
       root.classList.add('hero-fit');
       root.style.removeProperty('--hero-fs');
-      const content = words[0].parentElement.getBoundingClientRect();
-      const cs = getComputedStyle(words[0].parentElement);
-      const inner = content.width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      root.style.setProperty('--dog-w', Math.max(0, Rr - L).toFixed(1) + 'px');
+      root.style.setProperty('--dog-gap', g.toFixed(1) + 'px');
+      root.style.setProperty('--dog-shift', (mid - (hr.left + hr.width / 2)).toFixed(1) + 'px');
       const base = parseFloat(getComputedStyle(words[0]).fontSize) || 120;
-      const need = words[0].scrollWidth + words[1].scrollWidth + (Rr - L) * 0.3;   // keep the face clear
-      const scale = Math.min(1, inner / need);
+      const roomL = (L - g) - (hr.left + margin), roomR = (hr.right - margin) - (Rr + g);
+      const scale = Math.min(1, roomL / words[0].scrollWidth, roomR / words[1].scrollWidth);
       if (scale < 1) root.style.setProperty('--hero-fs', Math.max(34, Math.floor(base * scale)) + 'px');
+      // the text + button under the right word end on the same vertical line as it
+      requestAnimationFrame(() => {
+        const w2 = words[1].getBoundingClientRect();
+        root.style.setProperty('--cta-right', Math.max(margin, hr.right - w2.right).toFixed(1) + 'px');
+      });
       void gap; void pad;
     }
     window.addEventListener('resize', layout);
