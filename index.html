@@ -2,11 +2,7 @@
   // ===== VERSION SETTINGS — the two switches to flip back later =====
   // Two versions of the same page: "editorial" and "playful".
   //   DEFAULT_VERSION      what every visitor gets.          ('playful' — was 'editorial' for a while)
-  //   TYPOGRAPHY           the type used by the playful version:
-  //                        'playful'   = the display face below (DISPLAY_FONT) — now Ranchers, in capitals
-  //                        'editorial' = Montserrat Light in capitals (the 'display editorial' look)
-  //                        The editorial version always uses 'editorial'.
-  //                        One visit can try the other with ?type=playful / ?type=editorial.
+  //   TYPOGRAPHY           editorial only: Montserrat (SIL OFL 1.1, free for commercial use)
   //   SHOW_VERSION_SWITCH  the Playful / Editorial pill in the corner.
   //                        false = hidden; it can still be called up for a
   //                        visit with ?switch=on.           (was true)
@@ -31,48 +27,26 @@
   //                        editorial typography). Free, with full Cyrillic for a
   //                        Ukrainian version: 'montserrat' (closest to Garet, now),
   //                        'onest', 'jost', 'manrope'. (Garet, unlicensed, has been removed.)
-  //   DISPLAY_FONT         the hand-drawn display face of the playful typography
-  //                        (TYPOGRAPHY: 'playful'). Free, with Cyrillic:
-  //                        'ranchers' (now, in capitals), 'comfortaa', 'shantell', 'balsamiq',
-  //                        'pangolin'. 'ngaco' = the original (only with a licence).
-  //                        Font files of your own, put in assets/fonts/ (NOT free for
-  //                        a public / commercial site without a bought licence):
-  //                        'trimen'     → assets/fonts/trimen-drawing.woff2 / .otf / .ttf
-  //                        'nok'        → assets/fonts/nok.woff2 / .otf / .ttf
-  //                        'dreamkudos' → assets/fonts/dream-kudos.woff2 / .otf / .ttf
-  //                        'katales'    → assets/fonts/katales.woff2 / .otf / .ttf
-  //                        'frogie'     → assets/fonts/frogie.woff2 / .otf / .ttf
-  //                        These have no Cyrillic; Ukrainian letters fall back to Comfortaa.
-  //                        'ranchers' = Ranchers from Google Fonts (free, OFL, Latin only —
-  //                        Ukrainian letters also fall back to Comfortaa).
-  //                        One visit can try others: ?font=onest  ?display=balsamiq
   //   LANGS                'en' = English only (the EN / UA switch is hidden, Ukrainian off)
   //                        'en,uk' = both, with the switch
   //   HERO_INK             colour of the hero's words over the light puppy clip:
   //                        'light' = white words with a soft shadow (now)
   //                        'dark'  = the whole line in brown ink
-  window.CORGI_SETTINGS = { DEFAULT_VERSION: 'playful', SHOW_VERSION_SWITCH: false, TYPOGRAPHY: 'editorial', HERO_BALL: 'cursor', SMOOTH_SCROLL: true, HERO_CLIP: 'dog', FONT: 'montserrat', DISPLAY_FONT: 'ranchers', HERO_INK: 'light', LANGS: 'en,uk' };
+  window.CORGI_SETTINGS = { DEFAULT_VERSION: 'playful', SHOW_VERSION_SWITCH: false, TYPOGRAPHY: 'editorial', HERO_BALL: 'cursor', SMOOTH_SCROLL: true, HERO_CLIP: 'dog', FONT: 'montserrat', HERO_INK: 'light', LANGS: 'en,uk' };
   (function(){
     // load the chosen free fonts from Google Fonts (all OFL, Latin + Cyrillic)
     var S = window.CORGI_SETTINGS, q = new URLSearchParams(location.search);
-    var SANS = { montserrat:'Montserrat:wght@300;400;500;600;800', onest:'Onest:wght@300;400;500;600;800',
-                 jost:'Jost:wght@300;400;500;600;800', manrope:'Manrope:wght@300;400;500;600;800' };
-    var DISP = { shantell:'Shantell+Sans:wght@400;600;700;800', balsamiq:'Balsamiq+Sans:wght@400;700',
-                 pangolin:'Pangolin', comfortaa:'Comfortaa:wght@400;600;700', ranchers:'Ranchers' };
-    // display faces kept as files of your own in assets/fonts/ (licensed or for a
-    // private try-out only): they are not fetched from Google
-    var LOCAL = { trimen:1, nok:1, dreamkudos:1, katales:1, frogie:1 };
+    // ONE typeface on the whole site: Montserrat (Google Fonts, SIL Open Font
+    // License 1.1 — free for commercial use), in the editorial typography
+    var SANS = { montserrat:'Montserrat:wght@300;400;500;600;800' };
     // hero clip for one visit: ?hero=sit (the grown dog with the ball) / ?hero=puppy
     var hq = (q.get('hero') || '').toLowerCase();
     if (hq === 'dog') S.HERO_CLIP = 'dog';
     else if (hq === 'sit') S.HERO_CLIP = 'sit';
     else if (hq === 'puppy' || hq === 'move_head') S.HERO_CLIP = 'move_head';
-    var f = (q.get('font') || S.FONT || 'montserrat').toLowerCase();
-    var d = (q.get('display') || S.DISPLAY_FONT || 'comfortaa').toLowerCase();
-    if (!(f in SANS)) f = 'montserrat';
-    if (!(d in DISP) && !(d in LOCAL) && d !== 'ngaco') d = 'comfortaa';
+    var f = 'montserrat';
+    S.TYPOGRAPHY = 'editorial';
     document.documentElement.setAttribute('data-font', f);
-    document.documentElement.setAttribute('data-display', d);
     document.documentElement.setAttribute('data-hero-ink', (q.get('ink') || S.HERO_INK) === 'light' ? 'light' : 'dark');
     // language: English or Ukrainian — ?lang=uk / ?lang=en, remembered in the browser
     var lang = 'en';
@@ -92,16 +66,7 @@
     if (lang !== 'uk') lang = 'en';
     document.documentElement.setAttribute('lang', lang === 'uk' ? 'uk' : 'en');
     document.documentElement.setAttribute('data-lang', lang);
-    var fam = [];
-    if (SANS[f]) fam.push('family=' + SANS[f]);
-    // the display face is only fetched when the playful typography is on
-    var playType = (q.get('type') || S.TYPOGRAPHY) === 'playful' && q.get('v') !== 'editorial';
-    if (DISP[d] && playType) fam.push('family=' + DISP[d]);
-    // faces without Cyrillic borrow Comfortaa for the Ukrainian letters
-    if (LOCAL[d] && playType) fam.push('family=' + DISP.comfortaa);
-    // Ranchers has no Cyrillic: Ukrainian letters are set in Shantell Sans ExtraBold,
-    // a hand-lettered, equally heavy face
-    if (d === 'ranchers' && playType) fam.push('family=' + DISP.shantell);
+    var fam = ['family=' + SANS[f]];
     if (fam.length) {
       var pc = document.createElement('link'); pc.rel = 'preconnect'; pc.href = 'https://fonts.gstatic.com'; pc.crossOrigin = '';
       var l = document.createElement('link'); l.rel = 'stylesheet';
@@ -124,20 +89,15 @@
     } catch (e) {}
     if (v !== 'editorial' && v !== 'playful') v = 'playful';
     document.documentElement.setAttribute('data-version', v);
-    var t = S.TYPOGRAPHY === 'playful' ? 'playful' : 'editorial';
-    try { var qt = new URLSearchParams(location.search).get('type'); if (qt === 'playful' || qt === 'editorial') t = qt; } catch (e) {}
-    if (v === 'editorial') t = 'editorial';
+    var t = 'editorial';                         // one typography only: Montserrat, editorial
     document.documentElement.setAttribute('data-type', t);
     document.documentElement.setAttribute('data-switch', show ? 'on' : 'off');
   })();
 </script><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Welsh Corgi Ukraine · Pembroke Welsh Corgi Breeder in Kyiv</title><meta name="description" content="Pembroke Welsh Corgi breeder in Kyiv, Ukraine. KSU/FCI pedigree, health-tested parents, vet passport and chip. Puppies delivered across Ukraine and abroad."><meta name="theme-color" content="#3C1D09"><meta property="og:type" content="website"><meta property="og:title" content="Welsh Corgi Ukraine · Pembroke Welsh Corgi Breeder"><meta property="og:description" content="Find your perfect Pembroke Welsh Corgi. KSU/FCI pedigree, health-tested parents, delivery across Ukraine and abroad."><meta property="og:url" content="https://corgi-breeder-ua.vercel.app/"><meta property="og:image" content="https://corgi-breeder-ua.vercel.app/assets/watermelon_corgi_beige.jpeg"><meta property="og:image:width" content="2752"><meta property="og:image:height" content="1536"><meta property="og:image:alt" content="A smiling corgi wearing a watermelon slice around its face"><meta property="og:site_name" content="Welsh Corgi Ukraine"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Welsh Corgi Ukraine · Pembroke Welsh Corgi Breeder"><meta name="twitter:description" content="Find your perfect Pembroke Welsh Corgi. KSU/FCI pedigree, health-tested parents, delivery across Ukraine and abroad."><meta name="twitter:image" content="https://corgi-breeder-ua.vercel.app/assets/watermelon_corgi_beige.jpeg"><meta property="og:locale" content="en_US"><meta property="og:locale:alternate" content="uk_UA"><link rel="icon" href="assets/asset-20b4318cac72fa9e.x-icon"><link rel="icon" type="image/png" sizes="16x16" href="assets/asset-f84eb7ac18048c9a.png"><link rel="icon" type="image/png" sizes="32x32" href="assets/asset-8cc40142ea431c71.png"><link rel="icon" type="image/png" sizes="192x192" href="assets/asset-9d3975ca340a12bb.png"><link rel="apple-touch-icon" sizes="180x180" href="assets/asset-f0a6cbd87ddc157a.png">
 <style>
-  @font-face {
-    font-family:'Ngaco';
-    src:url('assets/Ngaco.otf') format('opentype'),
-        url('assets/Ngaco.ttf') format('truetype');
-    font-weight:400; font-style:normal; font-display:swap;
-  }
+  /* form controls take the page's typeface too (browsers give them their own by default) */
+  button, input, select, textarea{font-family:inherit;}
+
   
   
   :root{
@@ -156,7 +116,7 @@
     --line:rgba(60,29,9,.14);
     /* typefaces: see FONT / DISPLAY_FONT in VERSION SETTINGS at the top */
     --font-sans:'Montserrat', system-ui, sans-serif;
-    --font-play:'Ngaco';
+    --font-play:var(--font-sans);
     --font-display:var(--font-play), var(--font-sans);
     --font-body:var(--font-sans);
 
@@ -2026,30 +1986,7 @@
 
   /* ---------- free typefaces (see FONT / DISPLAY_FONT) ---------- */
   html[data-font="montserrat"]{--font-sans:'Montserrat', system-ui, sans-serif;}
-  html[data-font="onest"]{--font-sans:'Onest', system-ui, sans-serif;}
-  html[data-font="jost"]{--font-sans:'Jost', system-ui, sans-serif;}
-  html[data-font="manrope"]{--font-sans:'Manrope', system-ui, sans-serif;}
-  html[data-display="shantell"]{--font-play:'Shantell Sans';}
-  html[data-display="balsamiq"]{--font-play:'Balsamiq Sans';}
-  html[data-display="pangolin"]{--font-play:'Pangolin';}
-  html[data-display="comfortaa"]{--font-play:'Comfortaa';}
   /* your own display files (assets/fonts/); Cyrillic falls back to Comfortaa */
-  @font-face{font-family:'Trimen Drawing'; font-display:swap;
-    src:url('assets/fonts/trimen-drawing.woff2') format('woff2'), url('assets/fonts/trimen-drawing.otf') format('opentype'), url('assets/fonts/trimen-drawing.ttf') format('truetype');}
-  @font-face{font-family:'Nok'; font-display:swap;
-    src:url('assets/fonts/nok.woff2') format('woff2'), url('assets/fonts/nok.otf') format('opentype'), url('assets/fonts/nok.ttf') format('truetype');}
-  @font-face{font-family:'Dream Kudos'; font-display:swap;
-    src:url('assets/fonts/dream-kudos.woff2') format('woff2'), url('assets/fonts/dream-kudos.otf') format('opentype'), url('assets/fonts/dream-kudos.ttf') format('truetype');}
-  html[data-display="trimen"]{--font-play:'Trimen Drawing', 'Comfortaa';}
-  html[data-display="nok"]{--font-play:'Nok', 'Comfortaa';}
-  html[data-display="dreamkudos"]{--font-play:'Dream Kudos', 'Comfortaa';}
-  @font-face{font-family:'Katales'; font-display:swap;
-    src:url('assets/fonts/katales.woff2') format('woff2'), url('assets/fonts/katales.otf') format('opentype'), url('assets/fonts/katales.ttf') format('truetype');}
-  @font-face{font-family:'Frogie'; font-display:swap;
-    src:url('assets/fonts/frogie.woff2') format('woff2'), url('assets/fonts/frogie.otf') format('opentype'), url('assets/fonts/frogie.ttf') format('truetype');}
-  html[data-display="katales"]{--font-play:'Katales', 'Comfortaa';}
-  html[data-display="frogie"]{--font-play:'Frogie', 'Comfortaa';}
-  html[data-display="ranchers"]{--font-play:'Ranchers', 'Shantell Sans';}
   /* Ranchers is set in capitals (with the playful typography) */
   html[data-type="playful"][data-display="ranchers"] :is(
     .statement, .life-corgis-heading, .pup-word, .globe-intro-title,
@@ -2342,7 +2279,7 @@
     .puppies-video-bg{position:relative !important; top:auto !important; transform:none !important; height:56.25vw !important;}
     /* the four words sit under the clip, one under each puppy */
     .pup-quad-row{position:relative !important; top:auto !important; transform:none !important; height:auto !important;
-      display:flex !important; padding:14px 0 6px;}
+      display:flex !important; padding:14px 0 clamp(40px, 12vw, 64px);}      /* room below the four words before the next block */
     .pup-quad{height:auto !important;}
     .pup-tag{position:relative !important; left:auto !important; top:auto !important; bottom:auto !important;
       transform:translateY(10px) scale(.8); margin:0 auto;}
@@ -2402,6 +2339,50 @@
       width:auto !important; margin:0 auto !important; max-width:460px; align-items:center !important; text-align:center;
     }
     html[data-hero-clip="dog"] .hero .hero-lede{text-align:center; margin:0 0 10px;}
+  }
+
+  /* ================= PHONES: one side margin for every block, buttons at their own size =================
+     Every block keeps the same 24px from the screen edges, so the left and
+     right edges line up all the way down the page; buttons are as wide as
+     their label, never stretched across the screen. */
+  @media (max-width:768px){
+    :root{--m-gutter:24px;}
+    .hero, .about-wrap, .parents-wrap, .advantages-wrap, .globe-layout, .process .process-row,
+    .pups-pin, .corgi-track > .life-corgis-block, #findYours .find-block, footer#footer{
+      padding-left:var(--m-gutter) !important; padding-right:var(--m-gutter) !important;
+    }
+    html[data-hero-clip="dog"] .hero .hero-cta-cluster{left:var(--m-gutter) !important; right:var(--m-gutter) !important;}
+    .awards .adv-item{margin:0 0 10px !important; padding:0 !important;}          /* the four awards as one tidy list */
+    .pedigree-gallery{padding-left:0 !important; padding-right:0 !important;}
+    .globe-layout{box-sizing:border-box; width:100%;}
+    .globe-stage{width:min(100%, 420px) !important;}
+    .globe-detail-body{width:100% !important; max-width:460px; padding:0 !important; box-sizing:border-box;}
+    .globe-intro{width:100%; box-sizing:border-box;}
+    /* buttons: their own width */
+    .hero .hero-cta-cluster .btn{align-self:center !important; width:auto !important;}
+    .footer-top .hero-cta-cluster{align-items:flex-start !important;}
+    .footer-top .hero-cta-cluster .btn{width:auto !important; align-self:flex-start !important;}
+  }
+
+  /* ================= LITTER GALLERY: one logic per screen width =================
+     • wider than 600px (desktop, laptop, tablet — mouse or touch): the
+       accordion. One card is always open (Pixel to begin with), its details
+       unfold to the RIGHT of the photo; a click / tap opens another one.
+     • 600px and narrower (phones): every card shows its details BELOW the photo. */
+  @media (min-width:601px){
+    #litterGallery .ag-more{display:flex !important;}
+    #litterGallery .ag-item:not(.is-open) .ag-more{opacity:0 !important; pointer-events:none !important;}
+    #litterGallery .ag-cap{display:none !important;}
+    #litterGallery .ag-photo .ag-inq{display:none !important;}
+    #litterGallery .ag-item{cursor:pointer;}
+  }
+  @media (min-width:601px) and (max-width:1200px){
+    #litterGallery{--fy-w:clamp(220px, 34vw, 320px);}
+    #litterGallery .ag-item:not(.is-open){width:var(--fy-w) !important;}
+    #litterGallery .ag-item.is-open{width:calc(var(--fy-w) + min(420px, 48vw)) !important;}
+    /* no snapping while cards open and close — it fought the unfolding */
+    #litterGallery .ag-strip{scroll-snap-type:none !important; padding-inline:var(--m-gutter, 24px) !important;}
+    #litterGallery .find-next{display:inline-flex !important;}
   }
 </style>
 </head><body><button class="to-top" id="toTop" type="button" aria-label="Back to top"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button><header><div class="header-inner"><a class="header-brand" href="#hero" aria-label="Welsh Corgi Ukraine — home">PEMBROKE WELSH CORGI<br>BREEDER.</a><nav><a href="#about">About</a><a href="#parents">Parents</a><a href="#litterGallery">Puppies</a><a href="#globe">Reviews</a></nav><button type="button" class="lang-switch header-lang" data-lang-toggle aria-label="Language / Мова"><span data-l="en">EN</span><i>/</i><span data-l="uk">UA</span></button><button class="burger" id="burgerBtn" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button></div></header><div class="mobile-nav-overlay" id="mobileNavOverlay" aria-hidden="true"><button type="button" class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu"><span></span><span></span></button><nav class="mobile-nav"><a href="#hero">Home</a><a href="#about">About</a><a href="#parents">Parents</a><a href="#litterGallery">Puppies</a><a href="#globe">Reviews</a><button type="button" class="lang-switch" data-lang-toggle aria-label="Language / Мова"><span data-l="en">EN</span><i>/</i><span data-l="uk">UA</span></button></nav></div><!-- ================= HERO ================= --><section class="hero" id="hero"><div class="hero-video-bg" id="heroVideoBg"><video id="scrubVideo" muted playsinline preload="auto" poster="assets/hero_sit_poster.jpg"><source src="assets/hero_sit_hd.mp4" type="video/mp4"></video></div><script>
@@ -4099,6 +4080,9 @@
     const prev = document.getElementById('findPrev');
     if (!strip) return;
     const coarse = window.matchMedia('(pointer: coarse)').matches;
+    // accordion (one open card, details to the right) wider than 600px —
+    // with a mouse or a finger alike; phones show every card's details below
+    const accordion = () => window.innerWidth > 600;
     const tt = (window.t || (x => x));
     const items = () => [...strip.querySelectorAll('.ag-item')];
     const list0 = items();
@@ -4158,11 +4142,15 @@
       open = item;
       if (open) { open.classList.add('is-open'); if (anchor) keepInPlace(open); }
     }
-    // where card i will sit once it alone is open: every card before it is closed
+    // where card i will sit once it alone is open: only an open card before it
+    // changes that (it will close), so subtract its extra width
     function finalLeft(i){
-      const first = items()[0];
-      const closedW = first && !first.classList.contains('is-open') ? first.offsetWidth : (items()[1] || first).offsetWidth;
-      return i * (closedW + GAP());
+      const list = items(), it = list[i]; if (!it) return 0;
+      const closed = list.find(x => !x.classList.contains('is-open')) || it;
+      let left = it.offsetLeft;
+      const o = list.findIndex(x => x.classList.contains('is-open'));
+      if (o > -1 && o < i) left -= (list[o].offsetWidth - closed.offsetWidth);
+      return left;
     }
 
     // go to puppy i: open it (desktop) and bring it into view
@@ -4170,7 +4158,7 @@
       const list = items(); if (!list.length) return;
       i = (i + list.length) % list.length;
       openIdx = i; mark(i);
-      if (!coarse && window.innerWidth > 1200) {
+      if (accordion()) {
         set(list[i], false);
         // the card's final place and width are known: glide there in one move,
         // the open card centred
@@ -4181,13 +4169,15 @@
       }
     }
     function openWidthPx(){
-      // the open card = photo + the details panel (see the CSS rule for .is-open)
+      // the open card = photo + the details panel (see the CSS rules for .is-open)
       const lg = strip.closest('#litterGallery');
-      const fy = parseFloat(getComputedStyle(lg).getPropertyValue('--fy-w')) || 700;
-      return Math.min(strip.clientWidth, fy + Math.min(560, window.innerWidth * 0.42));
+      const probe = items().find(x => !x.classList.contains('is-open'));
+      const fy = probe ? probe.offsetWidth : (parseFloat(getComputedStyle(lg).getPropertyValue('--fy-w')) || 700);
+      const panel = window.innerWidth > 1200 ? Math.min(560, window.innerWidth * 0.42) : Math.min(420, window.innerWidth * 0.48);
+      return Math.min(strip.clientWidth, fy + panel);
     }
 
-    if (!coarse) {
+    if (accordion()) {
       // Pixel open from the start
       set(list0[0], false); mark(0);
       strip.addEventListener('click', (e) => {
@@ -4204,9 +4194,10 @@
           else if (r.left < sr.left) glideTo(strip.scrollLeft + (r.left - sr.left) - 24);
         }, 620);
       });
-    } else {
+    }
+    // the dots follow the card nearest the middle while swiping (phones)
+    if (!accordion()) {
       mark(0);
-      // the dots and counter follow the card nearest the middle while swiping
       let raf = 0;
       strip.addEventListener('scroll', () => {
         if (raf) return;
@@ -4822,12 +4813,16 @@
     }, { passive:true });
     document.addEventListener('pointerleave', () => { want = null; wantP = 0; active = null; });
 
-    // touch screens: a little show on its own — out to a move and back, then rest
-    if (window.matchMedia('(pointer: coarse)').matches) {
+    // devices with no mouse at all (phones, tablets): a little show on its own —
+    // out to a move and back. Never on a computer: if a mouse is ever moved,
+    // the show stops for good and the dog only follows the pointer.
+    let mouseSeen = false;
+    window.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') mouseSeen = true; }, { passive:true });
+    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
       const seq = [MOVES.left, MOVES.up, MOVES.down];
       let k = 0;
       setInterval(() => {
-        if (document.hidden) return;
+        if (document.hidden || mouseSeen) return;
         want = seq[k++ % seq.length]; wantP = 1;
         setTimeout(() => { want = null; wantP = 0; }, 1600);
       }, 3600);
