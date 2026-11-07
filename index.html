@@ -46,6 +46,11 @@
     else if (hq === 'puppy' || hq === 'move_head') S.HERO_CLIP = 'move_head';
     var f = 'montserrat';
     S.TYPOGRAPHY = 'editorial';
+    // ?capture — the page laid out still, for full-page screenshot tools: no
+    //            pinned / scroll-driven sections, everything shown at a good moment
+    // ?tour    — the page scrolls itself, slowly, top to bottom, for a screen recording
+    if (q.has('capture')) { document.documentElement.classList.add('capture'); window.CORGI_CAPTURE = true; S.SMOOTH_SCROLL = false; }
+    if (q.has('tour'))    { document.documentElement.classList.add('tour');    window.CORGI_TOUR = true; }
     document.documentElement.setAttribute('data-font', f);
     document.documentElement.setAttribute('data-hero-ink', (q.get('ink') || S.HERO_INK) === 'light' ? 'light' : 'dark');
     // language: English or Ukrainian — ?lang=uk / ?lang=en, remembered in the browser
@@ -2384,6 +2389,25 @@
     #litterGallery .ag-strip{scroll-snap-type:none !important; padding-inline:var(--m-gutter, 24px) !important;}
     #litterGallery .find-next{display:inline-flex !important;}
   }
+
+  /* ================= ?capture — a still page for full-page screenshots =================
+     No transitions, no pinned scroll tracks (each such block is one screen,
+     shown at a good moment), header at the top only, no floating extras. */
+  html.capture *, html.capture *::before, html.capture *::after{transition:none !important; animation:none !important; scroll-behavior:auto !important;}
+  html.capture header{position:absolute !important; transform:none !important; opacity:1 !important; pointer-events:auto !important;}
+  html.capture .to-top, html.capture .ball-canvas, html.capture .ball-courier, html.capture .hero-roll-ball,
+  html.capture .corgi-ball, html.capture .drop-ball, html.capture .pups-ball{display:none !important;}
+  html.capture .process, html.capture .adv-wheel, html.capture #pedTrack, html.capture .pups-intro,
+  html.capture .puppies, html.capture .corgi-track, html.capture #findYours, html.capture .roll-track{height:100vh !important; min-height:0 !important;}
+  html.capture .process-pin, html.capture .ped-pan .parents.curtain, html.capture .puppies-sticky, html.capture #findYours .find-block,
+  html.capture .roll-pin, html.capture .corgi-track > .life-corgis-block, html.capture .pups-pin{position:relative !important; top:auto !important;}
+  html.capture .js-curtains .curtain::before, html.capture .js-curtains .curtain::after{display:none !important;}
+  html.capture .js-curtains .curtain > *{transform:none !important; opacity:1 !important;}
+  html.capture .reveal-item, html.capture .pop-word, html.capture .section-reveal, html.capture .statement{opacity:1 !important; transform:none !important;}
+  html.capture .hero-content, html.capture .hero-top-row, html.capture .hero-cta-cluster, html.capture .hero-lede{transform:none !important;}
+  /* ================= ?tour — the page scrolls itself for a recording ================= */
+  html.tour, html.tour *{cursor:none !important;}
+  html.tour .to-top{display:none !important;}
 </style>
 </head><body><button class="to-top" id="toTop" type="button" aria-label="Back to top"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button><header><div class="header-inner"><a class="header-brand" href="#hero" aria-label="Welsh Corgi Ukraine — home">PEMBROKE WELSH CORGI<br>BREEDER.</a><nav><a href="#about">About</a><a href="#parents">Parents</a><a href="#litterGallery">Puppies</a><a href="#globe">Reviews</a></nav><button type="button" class="lang-switch header-lang" data-lang-toggle aria-label="Language / Мова"><span data-l="en">EN</span><i>/</i><span data-l="uk">UA</span></button><button class="burger" id="burgerBtn" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button></div></header><div class="mobile-nav-overlay" id="mobileNavOverlay" aria-hidden="true"><button type="button" class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu"><span></span><span></span></button><nav class="mobile-nav"><a href="#hero">Home</a><a href="#about">About</a><a href="#parents">Parents</a><a href="#litterGallery">Puppies</a><a href="#globe">Reviews</a><button type="button" class="lang-switch" data-lang-toggle aria-label="Language / Мова"><span data-l="en">EN</span><i>/</i><span data-l="uk">UA</span></button></nav></div><!-- ================= HERO ================= --><section class="hero" id="hero"><div class="hero-video-bg" id="heroVideoBg"><video id="scrubVideo" muted playsinline preload="auto" poster="assets/hero_sit_poster.jpg"><source src="assets/hero_sit_hd.mp4" type="video/mp4"></video></div><script>
   // editorial: the earlier hero clip (the dog seen side-on, scrubbed by the cursor)
@@ -3081,6 +3105,7 @@
     function updatePuppiesProgress(){
       const rect = puppiesSection.getBoundingClientRect();
       const scrollable = rect.height - window.innerHeight;
+      if (window.CORGI_CAPTURE) { pTarget = 1; return; }            // (screenshots: the puppies are out)
       if (scrollable <= 0) { pTarget = 0; return; }
       pTarget = Math.max(0, Math.min(1, -rect.top / scrollable));
     }
@@ -4274,7 +4299,7 @@
     const block = document.querySelector('#findYours .find-block');
     const ball  = document.getElementById('dropBall');
     if (!track || !block || !ball) return;
-    const off = () => window.matchMedia('(max-width:768px), (pointer: coarse)').matches;
+    const off = () => window.matchMedia('(max-width:768px), (pointer: coarse)').matches || window.CORGI_CAPTURE === true;   // (still, for screenshots)
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let sx = null, sy = null, spin = 0, lastX = null;
     function frame(){
@@ -4363,6 +4388,43 @@
     }, { threshold: 0.35 }).observe(block);
   });
 
+
+  // ================= ?capture / ?tour =================
+  if (window.CORGI_CAPTURE) {
+    // every entrance shown, every cut-out in place, the life block "live"
+    const show = () => {
+      document.querySelectorAll('.reveal-item, .section-reveal, .statement').forEach(e => e.classList.add('is-visible'));
+      document.querySelectorAll('.curtain').forEach(e => e.classList.add('is-open'));
+      document.querySelectorAll('.scatter-el').forEach(e => e.classList.add('is-in'));
+      document.querySelectorAll('.life-corgis-block').forEach(e => e.classList.add('is-live'));
+      const st = document.querySelector('.puppies-sticky'); if (st) st.classList.add('is-finished');
+    };
+    // every picture loads straight away (not when scrolled to), so none is missing in the shot
+    document.querySelectorAll('img[loading="lazy"]').forEach(i => { i.loading = 'eager'; });
+    show(); window.addEventListener('load', show); window.addEventListener('scroll', show, { passive:true });
+  }
+  if (window.CORGI_TOUR) {
+    // a slow, even scroll from top to bottom: a pause on the hero, a gentle
+    // ease in and out, and it stops at the footer — press any key to stop
+    let stopped = false;
+    window.addEventListener('keydown', () => { stopped = true; });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    const SPEED = Math.max(60, Math.min(900, +new URLSearchParams(location.search).get('tour') || 230));   // px/s (?tour=300 for faster)
+    setTimeout(() => {
+      let last = performance.now(), v = 0, pos = 0;
+      (function step(now){
+        if (stopped) return;
+        const dt = Math.min(0.05, (now - last) / 1000); last = now;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const left = max - pos;
+        const want = left < 400 ? SPEED * Math.max(0.15, left / 400) : SPEED;    // ease into the end
+        v += (want - v) * Math.min(1, dt * 2.5);                                    // ease out of the start
+        pos = Math.min(max, pos + v * dt);
+        window.scrollTo({ top: pos, behavior: 'instant' });              // (the page's CSS asks for smooth jumps — not here)
+        if (pos < max - 0.5) requestAnimationFrame(step);
+      })(last);
+    }, 3500);                                              // time to start the screen recorder
+  }
 
   // ================= SMOOTH SCROLL =================
   // The mouse wheel no longer jumps the page in notches: each turn sets a
@@ -4818,7 +4880,7 @@
     // the show stops for good and the dog only follows the pointer.
     let mouseSeen = false;
     window.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') mouseSeen = true; }, { passive:true });
-    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches || window.CORGI_TOUR) {
       const seq = [MOVES.left, MOVES.up, MOVES.down];
       let k = 0;
       setInterval(() => {
@@ -5182,7 +5244,7 @@
     const video = document.getElementById('rollVideo');
     const ball  = document.getElementById('rollBall');
     if (!track || !video || !ball) return;
-    const off = () => window.matchMedia('(max-width:768px), (pointer: coarse)').matches;
+    const off = () => window.matchMedia('(max-width:768px), (pointer: coarse)').matches || window.CORGI_CAPTURE === true;   // (still, for screenshots)
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // Measured from corgi_rolls_ball.mp4 (1280×720): at 1.0s (a keyframe) the
@@ -5398,7 +5460,7 @@
     const proc  = document.getElementById('process');
     const real  = document.getElementById('wheelBall');
     if (!hero || !pic || !about) return;
-    const off = () => window.matchMedia('(max-width:768px), (pointer: coarse)').matches;
+    const off = () => window.matchMedia('(max-width:768px), (pointer: coarse)').matches || window.CORGI_CAPTURE === true;   // (still, for screenshots)
     const easeIO = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ball = document.createElement('img');
@@ -6105,7 +6167,7 @@
     const title   = document.getElementById('pupsTitle');
     const ball    = document.getElementById('pupsBall');
     if (!section || !pin || !title || !ball) return;
-    const off = () => window.matchMedia('(max-width:768px), (pointer: coarse)').matches;
+    const off = () => window.matchMedia('(max-width:768px), (pointer: coarse)').matches || window.CORGI_CAPTURE === true;   // (still, for screenshots)
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // split both lines into letters (spaces stay as plain text)
@@ -6340,7 +6402,7 @@
     const block = document.querySelector('.life-corgis-block');
     const ball  = document.getElementById('corgiBall');
     if (!track || !block || !ball) return;
-    const off = () => window.matchMedia('(max-width:768px), (pointer: coarse)').matches;
+    const off = () => window.matchMedia('(max-width:768px), (pointer: coarse)').matches || window.CORGI_CAPTURE === true;   // (still, for screenshots)
 
     const toys = [...block.querySelectorAll('.life-heading .scatter-el')];
     const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
