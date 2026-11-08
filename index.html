@@ -100,6 +100,17 @@
   })();
 </script><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Welsh Corgi Ukraine · Pembroke Welsh Corgi Breeder in Kyiv</title><meta name="description" content="Pembroke Welsh Corgi breeder in Kyiv, Ukraine. KSU/FCI pedigree, health-tested parents, vet passport and chip. Puppies delivered across Ukraine and abroad."><meta name="theme-color" content="#3C1D09"><meta property="og:type" content="website"><meta property="og:title" content="Welsh Corgi Ukraine · Pembroke Welsh Corgi Breeder"><meta property="og:description" content="Find your perfect Pembroke Welsh Corgi. KSU/FCI pedigree, health-tested parents, delivery across Ukraine and abroad."><meta property="og:url" content="https://corgi-breeder-ua.vercel.app/"><meta property="og:image" content="https://corgi-breeder-ua.vercel.app/assets/watermelon_corgi_beige.jpeg"><meta property="og:image:width" content="2752"><meta property="og:image:height" content="1536"><meta property="og:image:alt" content="A smiling corgi wearing a watermelon slice around its face"><meta property="og:site_name" content="Welsh Corgi Ukraine"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Welsh Corgi Ukraine · Pembroke Welsh Corgi Breeder"><meta name="twitter:description" content="Find your perfect Pembroke Welsh Corgi. KSU/FCI pedigree, health-tested parents, delivery across Ukraine and abroad."><meta name="twitter:image" content="https://corgi-breeder-ua.vercel.app/assets/watermelon_corgi_beige.jpeg"><meta property="og:locale" content="en_US"><meta property="og:locale:alternate" content="uk_UA"><link rel="icon" href="assets/asset-20b4318cac72fa9e.x-icon"><link rel="icon" type="image/png" sizes="16x16" href="assets/asset-f84eb7ac18048c9a.png"><link rel="icon" type="image/png" sizes="32x32" href="assets/asset-8cc40142ea431c71.png"><link rel="icon" type="image/png" sizes="192x192" href="assets/asset-9d3975ca340a12bb.png"><link rel="apple-touch-icon" sizes="180x180" href="assets/asset-f0a6cbd87ddc157a.png">
 <style>
+  /* =====================================================================
+     LAYOUT GRID — every block sits on the same columns
+       desktop ≥1201: 12 columns · gutter 32 · margin 64
+       tablet 769–1200: 8 columns · gutter 24 · margin 40
+       phone ≤768:      4 columns · gutter 16 · margin 24
+     (all multiples of 8). Add ?grid to the address to see the columns.
+     ===================================================================== */
+  :root{--cols:12; --gutter:32px; --margin:64px;}
+  @media (max-width:1200px){ :root{--cols:8; --gutter:24px; --margin:40px;} }
+  @media (max-width:768px){ :root{--cols:4; --gutter:16px; --margin:24px;} }
+
   /* form controls take the page's typeface too (browsers give them their own by default) */
   button, input, select, textarea{font-family:inherit;}
 
@@ -268,7 +279,7 @@
   header.scrolled nav a{color:#F3E7DE;}
   header.scrolled .lang-switch{color:rgba(243,231,222,.6);}
   /* menu on the right, on the same line as the breeder's name on the left */
-  .header-inner{max-width:none; margin:0; padding:clamp(20px, 4vh, 40px) 40px 16px; display:flex; justify-content:space-between; align-items:flex-start;}
+  .header-inner{max-width:none; margin:0; padding:clamp(20px, 4vh, 40px) var(--margin) 16px; display:flex; justify-content:space-between; align-items:flex-start;}
   nav{display:flex; gap:30px; font-weight:var(--text-accent-caps-weight); font-size:var(--text-accent-caps-size); letter-spacing:var(--text-accent-caps-ls); text-transform:uppercase;}
   /* inline-block + padding gives each link a real hit area instead of just
      the glyphs themselves */
@@ -348,7 +359,7 @@
   .hero-video-bg.is-bright ~ .hero-top-row .eyebrow{text-shadow:0 1px 10px rgba(40,20,6,.45);}
   /* Soft brown vignette: darkens the edges and the area behind the headline
      without flattening the middle of the frame where the dog sits. */
-  .hero-top-row{display:flex; justify-content:space-between; align-items:flex-start; position:absolute; top:clamp(20px, 4vh, 40px); left:40px; right:40px; z-index:3;}
+  .hero-top-row{display:flex; justify-content:space-between; align-items:flex-start; position:absolute; top:clamp(20px, 4vh, 40px); left:var(--margin); right:var(--margin); z-index:3;}
   .hero-top-row .eyebrow{color:#E8D9CF; font-weight:300; text-decoration:none; transition:opacity .25s ease;}
   /* inline-block so the whole label — every line plus the rule — is one
      clickable box, not just the last text row */
@@ -383,7 +394,7 @@
     background:#1c0f07;
     color:#e8d9cf; padding:0;
   }
-  .about-wrap{max-width:none; margin:0; padding:0 calc(40px + 1vw); width:100%;}
+  .about-wrap{max-width:none; margin:0; padding:0 var(--margin); width:100%;}
   /* the heading column is never narrower than its words, so a longer line
      (Ukrainian "ПРИВІТ, / Я ОЛЕНА") keeps the same three-column layout */
   .about-grid{display:grid; grid-template-columns:minmax(max-content, 1.35fr) minmax(280px, 1.35fr) minmax(280px, 1.35fr); gap:clamp(20px, 3.5vw, 56px); align-items:center;}
@@ -407,7 +418,7 @@
     padding:clamp(60px, 10vh, 140px) 0;
     background-size:cover; background-position:center; overflow:hidden;
   }
-  .advantages-wrap{position:relative; z-index:1; max-width:none; margin:0; padding:0 calc(40px + 1vw); width:100%;}
+  .advantages-wrap{position:relative; z-index:1; max-width:none; margin:0; padding:0 var(--margin); width:100%;}
   .section-head{max-width:none; margin-bottom:clamp(14px, 3.5vh, 44px);}
   .section-head.center{margin-left:auto; margin-right:auto; text-align:center;}
   .adv-list{display:flex; flex-direction:column;}
@@ -460,7 +471,7 @@
 
   /* ---------- parents / pedigree ---------- */
   .parents{position:relative; min-height:100vh; display:flex; flex-direction:column; justify-content:center; overflow:hidden; background:#FDC9C3; padding:clamp(70px, 12vh, 150px) 0 clamp(70px, 12vh, 150px);}
-  .parents-wrap{max-width:none; margin:0; padding:0 calc(40px + 1vw); width:100%; display:flex; gap:10em; align-items:center;}
+  .parents-wrap{max-width:none; margin:0; padding:0 var(--margin); width:100%; display:flex; gap:10em; align-items:center;}
   .pedigree-label{flex:0 0 auto; display:flex; align-items:center;}
   .pedigree-label span{
     text-transform:lowercase;
@@ -517,7 +528,7 @@
   /* air above and below the parents (desktop): the cards are sized so that
      photo + caption fit between the two margins, never touching the edges */
   @media (min-width:1201px){
-    .parents{--ped-pad:clamp(90px, 13vh, 160px); padding-top:var(--ped-pad) !important; padding-bottom:var(--ped-pad) !important;}
+    .parents{--ped-pad:var(--section-pad, 96px); padding-top:var(--ped-pad) !important; padding-bottom:var(--ped-pad) !important;}   /* same step as every block */
     .pedigree-item{flex-basis:min(calc((100% - 56px) / 3), calc((100vh - 2 * var(--ped-pad) - 240px) * .75)) !important;}
   }
   .ped-pan .pedigree-gallery{scroll-snap-type:none; cursor:default;}
@@ -589,7 +600,7 @@
   .puppies-head{
     position:relative; z-index:4; height:100vh; margin-bottom:-2px;
     display:flex; align-items:center; justify-content:center; text-align:center;
-    padding:0 calc(40px + 1vw);
+    padding:0 var(--margin);
   }
   .life-corgis-heading{text-transform:lowercase; font-weight:300;}
   .life-corgis-block{justify-content:center; text-align:center;}
@@ -869,12 +880,12 @@
   }
   .find-meta{
     display:flex; justify-content:space-between; gap:20px;
-    padding:12px calc(40px + 1vw) 0;
+    padding:12px var(--margin) 0;
     font-size:var(--text-caption-size); font-weight:var(--text-caption-weight);
     letter-spacing:var(--text-accent-caps-ls); text-transform:uppercase; color:rgba(60,29,9,.6);
   }
   #litterGallery .find-heading-unused{
-    position:absolute; z-index:2; left:calc(40px + 1vw); bottom:clamp(40px, 7vh, 90px);
+    position:absolute; z-index:2; left:var(--margin); bottom:clamp(40px, 7vh, 90px);
     margin:0; text-align:left; color:#3c1d09;
   }
   @media (max-width:768px), (pointer: coarse){
@@ -903,7 +914,7 @@
   /* cut-outs seated on the letters (placed by the script), the same way as
      in "our latest puppies" */
   .scatter-heading .seat-toy{top:auto; right:auto; bottom:auto; left:0; max-width:none; height:auto;}
-  .reviews-wrap{max-width:none; margin:0; padding:0 calc(40px + 1vw); width:100%;}
+  .reviews-wrap{max-width:none; margin:0; padding:0 var(--margin); width:100%;}
   .ag-bleed{
     width:100vw; margin-left:calc(-50vw + 50%); margin-right:calc(-50vw + 50%); margin-top:0;
   }
@@ -963,7 +974,7 @@
     position:relative; overflow:hidden;
     height:100vh; max-height:100vh; display:flex; flex-direction:column; justify-content:center;
     background-color:#8a6f52; background-size:cover; background-position:center 35%;
-    padding:clamp(24px, 5vh, 60px) calc(40px + 1vw);
+    padding:clamp(24px, 5vh, 60px) var(--margin);
   }
   .footer-scrim{
     position:absolute; inset:0; z-index:0;
@@ -1268,7 +1279,7 @@
     align-items:center; justify-items:start;
     gap:clamp(20px, 3vw, 60px);
     width:100%; max-width:none; margin:0;
-    padding:0 calc(40px + 1vw);
+    padding:0 var(--margin);
   }
   /* vertical title, same device as PEDIGREE */
   .globe-label{display:flex; align-items:flex-end; justify-self:start; gap:.06em;}
@@ -1510,7 +1521,7 @@
   .process{
     position:relative; background:#92752a; color:#E8D9CF;
   }
-  .process-wrap{max-width:none; margin:0; padding:0 calc(40px + 1vw); width:100%;}
+  .process-wrap{max-width:none; margin:0; padding:0 var(--margin); width:100%;}
   .process-head{
     display:flex; align-items:flex-end; justify-content:space-between;
     gap:clamp(24px, 4vw, 64px); flex-wrap:wrap;
@@ -1524,7 +1535,7 @@
     position:relative; background:#E8D9CF; color:var(--ink);
     padding:clamp(70px, 12vh, 150px) 0;
   }
-  .faq-wrap{max-width:none; margin:0; padding:0 calc(40px + 1vw); width:100%;}
+  .faq-wrap{max-width:none; margin:0; padding:0 var(--margin); width:100%;}
   .faq-grid{
     display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.15fr);
     gap:clamp(28px, 5vw, 90px); align-items:center;
@@ -1588,7 +1599,7 @@
   }
   .process-row{position:relative; height:100%;}
   .process-label{
-    position:absolute; z-index:4; top:0; bottom:0; left:calc(40px + 1vw);
+    position:absolute; z-index:4; top:0; bottom:0; left:var(--margin);
     display:flex; align-items:center; pointer-events:none;
   }
   .process-label span{
@@ -1610,7 +1621,7 @@
   /* level with the ball's shoulder: at the very bottom the sphere is at its
      widest and would run under the text on laptop-sized screens */
   .process-price{
-    position:absolute; bottom:calc(var(--ball) * .3); right:calc(40px + 1vw); z-index:6;
+    position:absolute; bottom:calc(var(--ball) * .3); right:var(--margin); z-index:6;
     margin:0; display:flex; flex-direction:column; align-items:flex-end; gap:6px;
     color:#E8D9CF; text-align:right;
   }
@@ -1838,7 +1849,7 @@
     position:sticky; top:0; height:100vh; overflow:hidden;
     display:flex; align-items:center; justify-content:center;
     /* nudged down a little: the cut-outs perched on the top letters are tall */
-    padding:12vh calc(40px + 1vw) 0; box-sizing:border-box;
+    padding:12vh var(--margin) 0; box-sizing:border-box;
   }
   .pups-title{position:relative; z-index:1; color:#3c1d09; text-align:center; margin:0;}
   /* no fade-up shift on this one: the route is measured off these letters,
@@ -1932,7 +1943,7 @@
      display size, left-aligned on the page margin; the script copies the
      heading's exact top so the two lines sit in the same place on screen */
   .roll-phrase{
-    position:absolute; left:calc(40px + 1vw); top:auto; bottom:clamp(24px, 12vh, 160px); z-index:3;
+    position:absolute; left:var(--margin); top:auto; bottom:clamp(24px, 12vh, 160px); z-index:3;
     margin:0; text-align:left; color:#3c1d09; pointer-events:none;
     font-size:var(--text-display-size); line-height:.86; white-space:nowrap;
     opacity:1; transform:none;   /* the words animate, not the heading */
@@ -2134,7 +2145,7 @@
     .js-peek-header header{transform:none; opacity:1; pointer-events:auto;}
     header nav{display:none !important;}
     .burger{display:flex;}
-    .header-inner{justify-content:space-between; align-items:center; padding:18px 24px;}
+    .header-inner{justify-content:space-between; align-items:center; padding:18px var(--margin);}
     .header-brand{display:block !important; opacity:1 !important; pointer-events:auto !important;
       color:#fff; text-shadow:0 1px 10px rgba(40,20,6,.45);}
     header.scrolled .header-brand{text-shadow:none;}
@@ -2324,7 +2335,7 @@
     }
     #litterGallery .ag-more-name{font-size:32px;}
     #litterGallery .ag-more-text{-webkit-line-clamp:unset; display:block;}
-    .header-inner{padding:16px 18px;}
+    .header-inner{padding:16px var(--margin);}
   }
 
   /* ================= HERO ON TABLETS / PHONES =================
@@ -2351,7 +2362,7 @@
      right edges line up all the way down the page; buttons are as wide as
      their label, never stretched across the screen. */
   @media (max-width:768px){
-    :root{--m-gutter:24px;}
+    :root{--m-gutter:var(--margin);}
     .hero, .about-wrap, .parents-wrap, .advantages-wrap, .globe-layout, .process .process-row,
     .pups-pin, .corgi-track > .life-corgis-block, #findYours .find-block, footer#footer{
       padding-left:var(--m-gutter) !important; padding-right:var(--m-gutter) !important;
@@ -2408,6 +2419,198 @@
   /* ================= ?tour — the page scrolls itself for a recording ================= */
   html.tour, html.tour *{cursor:none !important;}
   html.tour .to-top{display:none !important;}
+
+  /* =====================================================================
+     TYPE SYSTEM — one typeface (Montserrat), 7 levels, 3 weights
+     ---------------------------------------------------------------------
+     level        desktop  phone   weight  tracking   line-height
+     1 Display    fluid    58      300     −3.5%      0.90   (statements)
+     2 Title      48       28      300     −2.5%      1.00   (card titles, price, names)
+     3 Subtitle   30       22      300     −1.5%      1.10   (city, puppy traits, modal titles)
+     4 Lead       22       18      300      0         1.45   (hero lede, Olena's bio, footer name)
+     5 Body       18       16      400      0         1.60   (all running text)
+     6 Caption    14       13      400      0         1.50   (facts, notes, small print — 65% ink)
+     7 Label      12       11      600 / 300 +12%     1.40   (CAPS: buttons, eyebrows / menu, tags)
+     Weights in use: 300 (large type), 400 (reading), 600 (labels & buttons).
+     ===================================================================== */
+  :root{
+    --t2:clamp(34px, 3.35vw, 52px); --t3:clamp(22px, 2.1vw, 32px); --t4:clamp(18px, 1.5vw, 22px);
+    --t5:clamp(16px, 1.25vw, 18px); --t6:clamp(13px, 0.97vw, 14px); --t7:12px;
+  }
+  @media (max-width:768px){ :root{ --t2:28px; --t3:22px; --t4:18px; --t5:16px; --t6:13px; --t7:11px; } }
+
+  /* 1 · Display */
+  .statement, .process-label span, .pedigree-label span, .globe-label span, .life-corgis-heading{letter-spacing:-0.035em !important; line-height:.9 !important;}
+  .statement .line{line-height:.9;}
+  /* 2 · Title */
+  .wheel-card .wc-title, .ag-more-name, .process-price .amount, .globe-intro-title, .pedigree-num{
+    font-size:var(--t2) !important; font-weight:300 !important; letter-spacing:-0.025em !important; line-height:1 !important;
+  }
+  /* 3 · Subtitle */
+  .globe-detail-city, .pup-word, .modal-title, .modal-success-title{
+    font-size:var(--t3) !important; font-weight:300 !important; letter-spacing:-0.015em !important; line-height:1.1 !important;
+  }
+  /* 4 · Lead */
+  .hero-lede, .about-bio p, .footer-brand{font-size:var(--t4) !important; font-weight:300 !important; letter-spacing:0 !important; line-height:1.45 !important;}
+  /* 5 · Body */
+  .wheel-card .wc-text, .ag-more-text, .globe-intro-text, .globe-detail-name, .pedigree-cap h3, .faq-list p, .faq-aside p,
+  .modal-sub, .footer-col a, .footer-tagline, .adv-item p, .puppy-trait-text{
+    font-size:var(--t5) !important; font-weight:400 !important; letter-spacing:0 !important; line-height:1.6 !important;
+  }
+  .pedigree-cap h3, .globe-detail-name{line-height:1.35 !important;}
+  /* 6 · Caption */
+  .globe-detail-rows dt, .globe-detail-rows dd, .pup-note, .note, .footer-ai-note, .globe-intro-hint, .ag-cap-name, .ag-cap-quote,
+  .footer-bottom, .footer-bottom a, .pedigree-cap .meta, .pedigree-meta{
+    font-size:var(--t6) !important; font-weight:400 !important; letter-spacing:0 !important; line-height:1.5 !important;
+  }
+  /* 7 · Label (CAPS) */
+  .btn, .eyebrow, .wc-num, .wheel-count, .footer-col-title, .ag-more-eyebrow, .puppy-trait-label, .modal-overlay label,
+  .stat .label, .about-stats .label, .label, .tag, .ag-more-facts span, .adv-marquee-item span, .pedigree-cap .role, .pedigree-role{
+    font-size:var(--t7) !important; letter-spacing:.12em !important; line-height:1.4 !important;
+  }
+  .btn, .eyebrow:not(.hero-top-row .eyebrow), .wc-num, .wheel-count, .footer-col-title, .ag-more-eyebrow, .puppy-trait-label, .modal-overlay label{font-weight:600 !important;}
+  .label, .tag, .ag-more-facts span, .adv-marquee-item span{font-weight:400 !important;}
+  /* the menu, the breeder's name and the language: one quiet label style */
+  header nav a, .header-brand, .hero .hero-top-row .eyebrow, header .header-lang{font-size:var(--t7) !important; letter-spacing:.12em !important;}
+  .mobile-nav .lang-switch, .mobile-nav .lang-switch span{font-size:var(--t5) !important; font-weight:400 !important;}
+  /* reading width: no running text wider than ~65 characters */
+  .about-bio p, .globe-intro-text, .faq-list p, .modal-sub, .footer-ai-note{max-width:65ch;}
+
+  /* type system — the last few stragglers */
+  /* small CAPS notes under prices / summaries / the globe: Label style */
+  .note, .globe-intro-hint, .process-price .note{font-size:var(--t7) !important; font-weight:400 !important; letter-spacing:.12em !important; line-height:1.5 !important;}
+  /* parents' card details: the term as a Label, the value as a Caption */
+  .pedigree-item dt{font-size:var(--t7) !important; font-weight:400 !important; letter-spacing:.12em !important; line-height:1.4 !important;}
+  .pedigree-item dd{font-size:var(--t6) !important; font-weight:400 !important; letter-spacing:0 !important; line-height:1.5 !important;}
+  /* the awards list: caption size in CAPS, lightly tracked — same on every screen */
+  .awards .adv-row h3, .awards .adv-item h3{font-size:var(--t6) !important; font-weight:400 !important; letter-spacing:.08em !important; line-height:1.4 !important;}
+  /* the breeder's name in the header and on the hero: the same weight as the menu */
+  .header-brand, .hero .hero-top-row .eyebrow{font-weight:300 !important; line-height:1.55 !important;}
+  /* phones: the four puppy words sit in narrow columns — caption size in CAPS */
+  @media (max-width:768px){ .pup-word{font-size:var(--t6) !important; letter-spacing:.08em !important; font-weight:400 !important;} }
+  .globe-detail-rows dt{font-size:var(--t7) !important; letter-spacing:.12em !important; line-height:1.4 !important;}
+
+  /* contrast ≥ 4.5:1 for all small text (WCAG AA) */
+  .wheel-card .wc-text, .wheel-card .wc-num, .pedigree-cap .tag, .adv-wheel .note{color:rgba(60,29,9,.82) !important;}
+  .adv-wheel .wheel-card .wc-text, .adv-wheel .wheel-card .wc-num{color:rgba(246,233,226,.86) !important;}   /* (light on the dark cards) */
+  .process:not(.adv-wheel) .process-price .note, .process:not(.adv-wheel) .wheel-count{color:#fff !important; opacity:1 !important;}  /* small type on mustard: white */
+  .btn-accent, .btn.btn-accent{color:#fff !important;}                                                       /* white on raspberry: 4.6:1 */
+
+  /* =====================================================================
+     IDENTITY — what is the same kind of thing looks exactly the same
+     (lesson: contrast · nuance · identity — no "almost the same")
+     ===================================================================== */
+  :root{
+    --radius-card:20px;                         /* every photo card and content card */
+    --btn-h:52px;                               /* every button */
+    --section-pad:96px;                         /* the air above / below a content block — one fixed step (8 × 12) */
+  }
+  /* 1 · one corner radius for all cards and framed photos (was 20 / 22 / 26) */
+  .wheel-card, .pedigree-photo, .about-photo-large, .globe-detail-photo img{border-radius:var(--radius-card) !important;}
+
+  /* 2 · one button: same height, padding, border and type everywhere
+        (the gallery's and the form's buttons were narrower / lower / borderless) */
+  .btn{
+    min-height:var(--btn-h); padding:0 30px !important; border:1px solid transparent !important;
+    display:inline-flex !important; align-items:center; justify-content:center; box-sizing:border-box;
+  }
+  .btn.btn-accent{border-color:var(--raspberry) !important;}
+  .modal-submit{min-height:var(--btn-h) !important;}
+  #litterGallery .ag-more .ag-more-btn, #litterGallery .ag-inq{padding:0 30px !important;}
+
+  /* 3 · one carousel arrow: the parents' arrow now matches the puppies' —
+        round, 52px, raspberry, white chevron (it was an outline in brown) */
+  .pedigree-arrow{background:var(--raspberry) !important; border:1px solid var(--raspberry) !important; box-shadow:0 10px 26px rgba(60,29,9,.22);}
+  .pedigree-arrow svg{stroke:#fff !important;}
+  .pedigree-arrow:hover{background:var(--raspberry-deep, #c40e3f) !important; border-color:var(--raspberry-deep, #c40e3f) !important;}
+
+  /* 4 · one vertical rhythm for content blocks (was 90 / 100 / 126 / 45) */
+  @media (min-width:769px){
+    #shows, #globe{padding-top:var(--section-pad) !important; padding-bottom:var(--section-pad) !important;}
+    #puppies-head, #corgiTrack{padding-top:var(--section-pad) !important; padding-bottom:var(--section-pad) !important;}
+    #litterGallery{padding-bottom:var(--section-pad) !important;}
+  }
+
+  /* =====================================================================
+     RHYTHM — one spacing scale on an 8px grid, used the same way everywhere
+       --s1 8 · --s2 16 · --s3 24 · --s4 32 · --s6 48 · --s8 64
+       between cards / list rows ............ 16
+       paragraph → paragraph ................ 16
+       photo → its caption .................. 16
+       text → the next element in a column . 24
+       heading → its content ................ 32 phone · 48 desktop
+       content block top / bottom ........... --section-pad
+     ===================================================================== */
+  :root{ --s1:8px; --s2:16px; --s3:24px; --s4:32px; --s6:48px; --s8:64px; }
+  .pedigree-gallery{gap:var(--s4) !important;}                 /* parents' cards (was 28) */
+  .pedigree-cap{margin-top:var(--s2) !important;}              /* photo → name (was 18) */
+  .about-bio p + p{margin-top:var(--s2) !important;}
+  .about-mid{gap:var(--s3) !important;}                         /* bio → numbers (was 26) */
+  @media (max-width:1200px){
+    .wheel-cards{gap:var(--s2) !important;}                    /* Process / You Get cards (was 14) */
+  }
+  @media (max-width:768px){
+    /* heading → its content: 32 in every block (was 20 / 26 / 30) */
+    .about-grid, .parents-wrap, .globe-layout{gap:var(--s4) !important; row-gap:var(--s4) !important;}
+    #shows .section-head{margin-bottom:var(--s4) !important;}
+    .adv-wheel .process-label{margin-top:var(--s4) !important;}
+    /* list rows: 16, like the cards (was 10) */
+    .awards .adv-item{margin:0 0 var(--s2) !important;}
+  }
+
+  /* RHYTHM (lesson 14) — one step between blocks on phones too: 64 (8 × 8) */
+  @media (max-width:768px){
+    :root{--section-pad:64px;}
+    #shows, #globe, #puppies-head, #corgiTrack{padding-top:var(--section-pad) !important; padding-bottom:var(--section-pad) !important;}
+    .pups-pin, .corgi-track > .life-corgis-block, #findYours .find-block{padding-top:var(--section-pad) !important; padding-bottom:var(--section-pad) !important;}
+    .parents{padding-top:var(--section-pad) !important; padding-bottom:var(--section-pad) !important;}
+    .pup-quad-row{padding-bottom:var(--section-pad) !important;}
+    #litterGallery{padding-bottom:var(--section-pad) !important;}
+  }
+  /* the accent belongs to the key things (button, key numbers, the chosen
+     dot/pin) — not to a small caption: the dog's name in Reviews goes quiet */
+  .globe-detail-name{color:rgba(232,217,207,.9) !important;}
+
+  /* grid alignment of the inner splits */
+  .about-grid{column-gap:var(--gutter) !important;}                      /* heading · bio · photo = 4 + 4 + 4 columns */
+  @media (min-width:1201px){
+    .about-grid{grid-template-columns:minmax(max-content, 1fr) 1fr 1fr !important;}
+    .pedigree-gallery{gap:var(--gutter) !important;}
+    .pedigree-item{flex-basis:min(calc((100% - 2 * var(--gutter)) / 3), calc((100vh - 2 * var(--ped-pad) - 240px) * .75)) !important;}
+    .globe-layout{column-gap:var(--gutter) !important;}
+    .globe-detail-body{justify-self:stretch !important;}                 /* its right edge on the page margin */
+  }
+  /* ?grid — the columns drawn over the page, to check alignment by eye */
+  .grid-overlay{
+    position:fixed; inset:0 var(--margin); z-index:99999; pointer-events:none;
+    display:grid; grid-template-columns:repeat(var(--cols), 1fr); column-gap:var(--gutter);
+  }
+  .grid-overlay i{background:rgba(232,17,75,.10); border-left:1px solid rgba(232,17,75,.35); border-right:1px solid rgba(232,17,75,.35);}
+
+  /* grid alignment — the bio starts on its column line (it floated in the middle third) */
+  @media (min-width:1201px){
+    .about-mid{align-items:flex-start !important; text-align:left !important;}
+    .about-stats{justify-content:flex-start !important;}
+  }
+  /* tablets & phones: every section title and its content start on the left
+     margin (some were centred, some left — mixed); the globe itself stays
+     centred as an object; the big "statement" lines (Meet the best kids,
+     Life needs more corgis, Let's find yours) stay centred like on desktop */
+  @media (max-width:1200px){
+    .process .process-row, .adv-wheel .process-row{padding-left:var(--margin) !important; padding-right:var(--margin) !important;}
+    .about-grid{justify-items:stretch !important; text-align:left !important;}
+    .about-heading, .about-heading .statement{text-align:left !important; justify-self:start !important;}
+    .about-mid{align-items:flex-start !important; text-align:left !important;}
+    .about-stats{justify-content:flex-start !important;}
+    .about-photo-large{justify-self:start !important;}
+    .parents-wrap{align-items:flex-start !important;}
+    .pedigree-label{align-self:flex-start !important; justify-content:flex-start !important;}
+    .globe-layout{justify-items:start !important;}
+    .globe-label{justify-self:start !important;}
+    .globe-stagewrap{justify-self:center !important;}
+    .globe-detail-photo{justify-self:start !important;}
+    .globe-detail-body, .globe-intro{justify-self:stretch !important; text-align:left !important;}
+  }
 </style>
 </head><body><button class="to-top" id="toTop" type="button" aria-label="Back to top"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button><header><div class="header-inner"><a class="header-brand" href="#hero" aria-label="Welsh Corgi Ukraine — home">PEMBROKE WELSH CORGI<br>BREEDER.</a><nav><a href="#about">About</a><a href="#parents">Parents</a><a href="#litterGallery">Puppies</a><a href="#globe">Reviews</a></nav><button type="button" class="lang-switch header-lang" data-lang-toggle aria-label="Language / Мова"><span data-l="en">EN</span><i>/</i><span data-l="uk">UA</span></button><button class="burger" id="burgerBtn" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button></div></header><div class="mobile-nav-overlay" id="mobileNavOverlay" aria-hidden="true"><button type="button" class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu"><span></span><span></span></button><nav class="mobile-nav"><a href="#hero">Home</a><a href="#about">About</a><a href="#parents">Parents</a><a href="#litterGallery">Puppies</a><a href="#globe">Reviews</a><button type="button" class="lang-switch" data-lang-toggle aria-label="Language / Мова"><span data-l="en">EN</span><i>/</i><span data-l="uk">UA</span></button></nav></div><!-- ================= HERO ================= --><section class="hero" id="hero"><div class="hero-video-bg" id="heroVideoBg"><video id="scrubVideo" muted playsinline preload="auto" poster="assets/hero_sit_poster.jpg"><source src="assets/hero_sit_hd.mp4" type="video/mp4"></video></div><script>
   // editorial: the earlier hero clip (the dog seen side-on, scrubbed by the cursor)
@@ -4389,6 +4592,17 @@
   });
 
 
+  // ================= ?grid — show the layout columns =================
+  if (new URLSearchParams(location.search).has('grid')) {
+    const g = document.createElement('div'); g.className = 'grid-overlay';
+    const draw = () => {
+      const n = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cols')) || 12;
+      g.innerHTML = '<i></i>'.repeat(n);
+    };
+    draw(); window.addEventListener('resize', draw);
+    document.body.appendChild(g);
+  }
+
   // ================= ?capture / ?tour =================
   if (window.CORGI_CAPTURE) {
     // every entrance shown, every cut-out in place, the life block "live"
@@ -4617,7 +4831,9 @@
       // Full statement size; the words hug the dog with one equal gap on each
       // side, and only shrink if a word would run past the page margin.
       const hr = hero.getBoundingClientRect();
-      const g = Math.max(20, r.width * 0.024), margin = Math.max(24, r.width * 0.03);
+      // the gap between the dog and each word = one grid gutter (identity with the rest of the page)
+      const g = parseFloat(getComputedStyle(root).getPropertyValue('--gutter')) || 32;
+      const margin = parseFloat(getComputedStyle(root).getPropertyValue('--margin')) || 64;
       const mid = (L + Rr) / 2;
       root.classList.add('hero-fit');
       root.style.removeProperty('--hero-fs');
