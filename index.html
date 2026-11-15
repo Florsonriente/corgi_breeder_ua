@@ -525,11 +525,14 @@
      from the row's real overflow by the script. */
   /* .curtain is set to position:relative later on, so this needs the extra class to win */
   .ped-pan .parents.curtain{position:sticky; top:0; height:100vh; min-height:0; box-sizing:border-box;}
-  /* air above and below the parents (desktop): the cards are sized so that
-     photo + caption fit between the two margins, never touching the edges */
+  /* air above and below the parents (desktop). Three parents are always in
+     view and the rest come in sideways; on a short screen the photos give up
+     a little height (never width), so photo + caption still fit between the
+     two margins — the script sets --ped-photo-max from the real layout */
   @media (min-width:1201px){
     .parents{--ped-pad:var(--section-pad, 96px); padding-top:var(--ped-pad) !important; padding-bottom:var(--ped-pad) !important;}   /* same step as every block */
-    .pedigree-item{flex-basis:min(calc((100% - 56px) / 3), calc((100vh - 2 * var(--ped-pad) - 240px) * .75)) !important;}
+    .pedigree-item{flex-basis:calc((100% - 56px) / 3) !important;}
+    .pedigree-photo img, .pedigree-photo video{max-height:var(--ped-photo-max, none);}
   }
   .ped-pan .pedigree-gallery{scroll-snap-type:none; cursor:default;}
   .ped-pan .pedigree-loop{display:none;}
@@ -2576,7 +2579,7 @@
   @media (min-width:1201px){
     .about-grid{grid-template-columns:minmax(max-content, 1fr) 1fr 1fr !important;}
     .pedigree-gallery{gap:var(--gutter) !important;}
-    .pedigree-item{flex-basis:min(calc((100% - 2 * var(--gutter)) / 3), calc((100vh - 2 * var(--ped-pad) - 240px) * .75)) !important;}
+    .pedigree-item{flex-basis:calc((100% - 2 * var(--gutter)) / 3) !important;}   /* three in view, the rest scroll in */
     .globe-layout{column-gap:var(--gutter) !important;}
     .globe-detail-body{justify-self:stretch !important;}                 /* its right edge on the page margin */
   }
@@ -2610,6 +2613,68 @@
     .globe-stagewrap{justify-self:center !important;}
     .globe-detail-photo{justify-self:start !important;}
     .globe-detail-body, .globe-intro{justify-self:stretch !important; text-align:left !important;}
+  }
+
+  /* =====================================================================
+     FIGMA GRID CHECK — fixes
+     ===================================================================== */
+  /* 1 · hero: the lede and the button stay together and end on the header's
+     right edge — the page margin, where EN / UA ends (tablets and phones keep
+     the centred hero, so the cluster stays on the centre axis there) */
+  html.hero-fit .hero .hero-cta-cluster{right:var(--margin) !important;}
+  /* 2 · the shows list: the rules between the rows run margin to margin
+     (they poked 24px past both edges); icon and date sit on the margins */
+  @media (min-width:769px){
+    .awards .adv-item{margin-left:0 !important; margin-right:0 !important;}
+    .awards .adv-row{padding-left:0 !important; padding-right:0 !important;}
+  }
+  /* 3 · Process / You Get: the open card sits exactly in the middle of its
+     screen — the same air above and below it (= the ball's radius) — so the
+     two blocks mirror each other: Process top gap = You Get bottom gap */
+  @media (min-width:1201px){
+    .process .wheel-stage{--card-h: max(320px, calc(max(100vh, 640px) - 2 * var(--radius)));}
+  }
+  /* tablets & phones: Process opens and You Get closes with the same step
+     (--section-pad), and the ball keeps the same gap to the cards on both sides */
+  @media (max-width:1200px){
+    .process:not(.adv-wheel){padding-top:var(--section-pad) !important;}
+    .adv-wheel{padding-bottom:var(--section-pad) !important;}
+    .process:not(.adv-wheel) .wheel-ball{margin-top:var(--s6) !important;}
+    .adv-wheel .wheel-ball{margin-bottom:var(--s6) !important;}
+    .adv-wheel .process-label{margin-top:0 !important;}
+  }
+  /* 4 · puppies: one rule for the four captions — each is centred under its
+     own puppy (the script reads where the puppies stand in the clip) and all
+     four hang on one line a fixed step under the paws */
+  .pup-tag{translate:var(--pup-dx, 0px) 0;}
+  @media (min-width:769px){
+    .pup-tag{top:var(--pup-top, 85%) !important; bottom:auto !important;}
+  }
+  @media (max-width:768px){
+    .pup-quad-row{padding-top:var(--s2) !important;}        /* clip → its captions: 16, like photo → caption */
+  }
+  /* Parents, desktop: the row's spare top/bottom padding goes (the height is
+     better spent on the photos), and on a short screen (laptops under ~820px
+     tall) the pinned block's air steps down from --section-pad to --s8 */
+  @media (min-width:1201px){
+    .ped-pan .pedigree-gallery{padding-top:var(--s1) !important; padding-bottom:var(--s1) !important;}
+  }
+  @media (min-width:1201px) and (max-height:820px){
+    .parents{--ped-pad:var(--s8);}
+  }
+  /* when a short screen makes the photos shorter than 3:4, each one is cropped
+     so its whole dog stays in the frame (on a tall screen nothing is cropped) */
+  .pedigree-photo img[src*="e852d695760995c1"]{object-position:center 82%;}   /* 01 · on its hind legs */
+  .pedigree-photo img[src*="c5a16622492d67a0"]{object-position:center 80%;}   /* 03 */
+  .pedigree-photo img[src*="89a828c1c7675acc"]{object-position:center 65%;}   /* 04 · with the ball */
+  .pedigree-photo img[src*="03c8be269a35bb09"]{object-position:center 38%;}   /* 05 · mid-jump */
+  /* the catch clip, when shorter than 3:4: framed from higher up, so the ball
+     arriving at the top right stays fully in shot */
+  html.ped-short .pedigree-photo video{object-position:center 20%;}
+  /* tablets: PARENTS was set smaller (69px) than every other section title
+     (119px at 1024) — one title size, as on desktop and phones */
+  @media (min-width:769px) and (max-width:1200px){
+    .pedigree-label span{font-size:var(--text-display-size) !important;}
   }
 </style>
 </head><body><button class="to-top" id="toTop" type="button" aria-label="Back to top"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button><header><div class="header-inner"><a class="header-brand" href="#hero" aria-label="Welsh Corgi Ukraine — home">PEMBROKE WELSH CORGI<br>BREEDER.</a><nav><a href="#about">About</a><a href="#parents">Parents</a><a href="#litterGallery">Puppies</a><a href="#globe">Reviews</a></nav><button type="button" class="lang-switch header-lang" data-lang-toggle aria-label="Language / Мова"><span data-l="en">EN</span><i>/</i><span data-l="uk">UA</span></button><button class="burger" id="burgerBtn" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button></div></header><div class="mobile-nav-overlay" id="mobileNavOverlay" aria-hidden="true"><button type="button" class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu"><span></span><span></span></button><nav class="mobile-nav"><a href="#hero">Home</a><a href="#about">About</a><a href="#parents">Parents</a><a href="#litterGallery">Puppies</a><a href="#globe">Reviews</a><button type="button" class="lang-switch" data-lang-toggle aria-label="Language / Мова"><span data-l="en">EN</span><i>/</i><span data-l="uk">UA</span></button></nav></div><!-- ================= HERO ================= --><section class="hero" id="hero"><div class="hero-video-bg" id="heroVideoBg"><video id="scrubVideo" muted playsinline preload="auto" poster="assets/hero_sit_poster.jpg"><source src="assets/hero_sit_hd.mp4" type="video/mp4"></video></div><script>
@@ -4805,6 +4870,102 @@
     setTimeout(fit, 1500); setTimeout(fit, 3500);
   })();
 
+  // ================= OPTICAL LEFT EDGE =================
+  // Every letter carries a little built-in white space on its left (the side
+  // bearing). In small text it is invisible, but at display size Montserrat's
+  // "M" starts ~16px inside its box and an "O" ~7px — so a heading set on the
+  // margin looked shifted right, and the two lines of one heading (MEET /
+  // OLENA) didn't line up with each other. Each left-aligned display line is
+  // nudged by its own first letter's bearing, so the ink itself starts on the
+  // margin. The vertical section titles get the same: the cap tops (which face
+  // left once the word is turned) are moved onto the margin.
+  (function(){
+    const ctx = document.createElement('canvas').getContext('2d');
+    if (!ctx || !('actualBoundingBoxLeft' in ctx.measureText('M'))) return;
+    const H = '.statement:not(.hero-word), .life-corgis-heading';
+    const V = '.process-label span, .pedigree-label span, .globe-label span';
+    const font = cs => [cs.fontStyle, cs.fontWeight, cs.fontSize, cs.fontFamily].join(' ');
+    const caseOf = (s, cs) => cs.textTransform === 'uppercase' ? s.toUpperCase() : cs.textTransform === 'lowercase' ? s.toLowerCase() : s;
+    const isLeft = cs => cs.textAlign === 'left' || (cs.textAlign === 'start' && cs.direction !== 'rtl');
+    function horizontal(el, blockCs){
+      const cs = getComputedStyle(el), size = parseFloat(cs.fontSize);
+      if (!el.offsetWidth || size < 28 || cs.writingMode !== 'horizontal-tb') return;
+      if (!isLeft(blockCs) || !isLeft(cs)) return;
+      const first = Array.from(caseOf((el.textContent || '').trim(), cs))[0];
+      if (!first) return;
+      ctx.font = font(cs);
+      const dx = ctx.measureText(first).actualBoundingBoxLeft;      // negative: the ink starts inside the box
+      if (isFinite(dx) && Math.abs(dx) > 0.5 && Math.abs(dx) < size * 0.25) el.style.translate = dx.toFixed(1) + 'px 0';
+    }
+    function run(){
+      document.querySelectorAll(H + ',' + H.split(', ').map(s => s + ' .line').join(',') + ',' + V)
+        .forEach(el => el.style.removeProperty('translate'));
+      document.querySelectorAll(H).forEach(el => {
+        const lines = el.querySelectorAll('.line'), cs = getComputedStyle(el);
+        (lines.length ? [...lines] : [el]).forEach(ln => horizontal(ln, cs));
+      });
+      document.querySelectorAll(V).forEach(el => {
+        const cs = getComputedStyle(el);
+        if (!el.offsetWidth) return;
+        if (!cs.writingMode.startsWith('vertical')) { horizontal(el, cs); return; }   // tablets & phones: a normal line
+        const t = caseOf((el.textContent || '').trim(), cs); if (!t) return;
+        ctx.font = font(cs);
+        const m = ctx.measureText(t), A = m.fontBoundingBoxAscent, D = m.fontBoundingBoxDescent;
+        if (!isFinite(A) || !isFinite(D)) return;
+        const lh = cs.lineHeight === 'normal' ? A + D : parseFloat(cs.lineHeight);
+        const ink = (lh - (A + D)) / 2 + A - m.actualBoundingBoxAscent;   // margin → cap tops
+        if (isFinite(ink) && ink > 0.5 && ink < lh / 2) el.style.translate = (-ink).toFixed(1) + 'px 0';
+      });
+    }
+    let t = 0;
+    const later = () => { clearTimeout(t); t = setTimeout(run, 160); };
+    window.addEventListener('resize', later);
+    window.addEventListener('load', later);
+    if (document.fonts) { document.fonts.ready.then(later); if (document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', later); }
+    run(); setTimeout(run, 1700); setTimeout(run, 3700);
+  })();
+
+  // ================= PUPPIES: each caption under its own puppy =================
+  // The four puppies don't stand in four equal quarters of the clip, and on a
+  // wide screen the clip is cropped at the sides — so a caption centred in its
+  // quarter missed its puppy by a different amount each time. Now every
+  // caption is centred on its puppy (where they stand in the last frame, as a
+  // share of the clip's width), never past the page margins, and all four
+  // hang on one line a fixed step below the lowest paws.
+  (function(){
+    const row = document.querySelector('.pup-quad-row'), bg = document.querySelector('.puppies-video-bg');
+    if (!row || !bg) return;
+    const quads = [...row.querySelectorAll('.pup-quad')];
+    const AT = [0.158, 0.394, 0.624, 0.852];        // puppy centres, share of the clip's width
+    const PAWS = 0.77, RATIO = 16 / 9;              // lowest paws, share of the clip's height
+    const root = document.documentElement;
+    function place(){
+      const b = bg.getBoundingClientRect(), r = row.getBoundingClientRect();
+      if (!b.width || !b.height) return;
+      const w = Math.max(b.width, b.height * RATIO), h = w / RATIO;          // object-fit: cover
+      const ox = b.left + (b.width - w) / 2, oy = b.top + (b.height - h) / 2;
+      const M = parseFloat(getComputedStyle(root).getPropertyValue('--margin')) || 24;
+      const vw = root.clientWidth;
+      quads.forEach((q, i) => {
+        const tag = q.querySelector('.pup-tag'); if (!tag || AT[i] == null) return;
+        const qr = q.getBoundingClientRect(), centre = qr.left + qr.width / 2;
+        const tw = Math.max(28, ...[...tag.children].filter(c => c.offsetWidth).map(c => c.offsetWidth));
+        const x = Math.min(Math.max(ox + AT[i] * w, M + tw / 2), vw - M - tw / 2);
+        tag.style.setProperty('--pup-dx', (x - centre).toFixed(1) + 'px');
+      });
+      if (window.innerWidth > 768) {
+        const step = window.innerWidth > 1200 ? 48 : 32;                       // --s6 / --s4
+        row.style.setProperty('--pup-top', (oy - r.top + PAWS * h + step).toFixed(1) + 'px');
+      } else row.style.removeProperty('--pup-top');
+    }
+    let t = 0;
+    const later = () => { clearTimeout(t); t = setTimeout(place, 120); };
+    window.addEventListener('resize', later);
+    window.addEventListener('load', later);
+    if (document.fonts) document.fonts.ready.then(later);
+    place(); setTimeout(place, 1800);
+  })();
+
   // ================= HERO: words placed around the puppy =================
   (function(){
     if (!document.getElementById('heroFrames')) return;       // only with the puppy clip
@@ -5403,10 +5564,13 @@
         card.style.zIndex = String(20 - Math.round(ad * 4));
         const base = Math.max(0, 1 - Math.max(0, ad - 0.15) * 0.55 - Math.max(0, ad - 1.2) * 1.2);
         card.style.opacity = String(base * fade);
+        // an exact mirror of Process: there a smaller neighbour keeps its
+        // outer (top) edge on the arc; here it keeps its outer (bottom) edge
+        const s = 1 - Math.min(1, ad) * 0.12;
         card.style.transform =
           'rotate(' + (-d * STEP).toFixed(2) + 'deg)' +
-          ' translateY(var(--radius))' +
-          ' scale(' + (1 - Math.min(1, ad) * 0.12).toFixed(3) + ')';
+          ' translateY(calc(var(--radius) + var(--card-h) * ' + (1 - s).toFixed(3) + '))' +
+          ' scale(' + s.toFixed(3) + ')';
         card.style.pointerEvents = (ad > 1.4 || roll > 0.2) ? 'none' : 'auto';
       });
       extras.forEach(el => { el.style.opacity = String(fade); });
@@ -6074,10 +6238,35 @@
       }
       root.classList.add('ped-pan');
       gallery.scrollLeft = 0;
+      fitPhotos();
       dist = Math.max(0, gallery.scrollWidth - gallery.clientWidth);
       dead = window.innerHeight * 0.2;
       track.style.height = (window.innerHeight + dead + dist * 1.15).toFixed(0) + 'px';
       update();
+    }
+    // desktop: the cards keep their width (three in view); if numbers + photo
+    // + captions are taller than the space between the two margins, only the
+    // photos get shorter (cropped from the bottom, never squeezed), down to 4:3
+    function fitPhotos(){
+      root.style.removeProperty('--ped-photo-max');
+      root.classList.remove('ped-short');
+      if (window.innerWidth <= 1200) return;
+      const sec = document.getElementById('parents'), col = gallery.parentElement;
+      const photo = gallery.querySelector('.pedigree-photo');
+      if (!sec || !col || !photo) return;
+      const cs = getComputedStyle(sec);
+      const avail = sec.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      let need = 0;
+      [...col.children].forEach(c => {
+        const k = getComputedStyle(c);
+        if (k.position === 'absolute' || k.position === 'fixed' || !c.offsetHeight) return;
+        need += c.offsetHeight + parseFloat(k.marginTop) + parseFloat(k.marginBottom);
+      });
+      const over = need - avail;
+      if (over > 0) {
+        root.style.setProperty('--ped-photo-max', Math.max(photo.offsetWidth * 0.75, photo.offsetHeight - over).toFixed(0) + 'px');
+        root.classList.add('ped-short');
+      }
     }
     function update(){
       if (!root.classList.contains('ped-pan')) return;
@@ -6309,10 +6498,14 @@
       const pr = ped.getBoundingClientRect();
       const leg2 = clamp((vh - pr.top) / vh, 0, 1);
 
-      // where the ball is in card 02 at ENTER_AT: 86.5% across, 12% down,
-      // 20% of the card's width (the 9:16 clip is cropped 3:4, 30% from the top)
+      // where the ball is in card 02 at ENTER_AT: in the 9:16 clip it is 86.5%
+      // across and 16.4% down, 20% of the clip's width. The card shows the clip
+      // object-fit:cover at 30% from the top — at 3:4, or shorter on a short
+      // screen — so the point is worked out from the card's real shape.
       const cr = card.getBoundingClientRect();
-      const T = { x: cr.left + cr.width * 0.865, y: cr.top + cr.height * 0.119, s: cr.width * 0.20 };
+      const sw = Math.max(cr.width, cr.height * 9 / 16), sh = sw * 16 / 9;
+      const py = (parseFloat((getComputedStyle(video).objectPosition || '').split(' ')[1]) / 100);
+      const T = { x: cr.left + (cr.width - sw) * 0.5 + sw * 0.865, y: cr.top + (cr.height - sh) * (isFinite(py) ? py : 0.3) + sh * 0.1643, s: sw * 0.20 };
 
       if (leg1 <= 0 || (leg2 >= 1)) {
         if (leg2 >= 1) {
