@@ -2661,6 +2661,14 @@
   /* the catch clip, when shorter than 3:4: framed from higher up, so the ball
      arriving at the top right stays fully in shot */
   html.ped-short .pedigree-photo video{object-position:center 20%;}
+  /* the litter gallery (wider than 600px): the strip starts and ends on the
+     page margins, so the open puppy lines up with the title; the arrows move
+     under the strip, beside the dots */
+  @media (min-width:601px){
+    #litterGallery .ag-strip{padding-left:var(--margin) !important; padding-right:var(--margin) !important; scroll-snap-type:none !important; cursor:default;}
+    #litterGallery .fy-nav .find-next{position:static !important; transform:none !important; top:auto; right:auto; left:auto; width:48px; height:48px; flex:0 0 auto;}
+    #litterGallery .fy-nav .find-next:hover{transform:scale(1.06) !important;}
+  }
   /* tablets: PARENTS was set smaller (69px) than every other section title
      (119px at 1024) — one title size, as on desktop and phones */
   @media (min-width:769px) and (max-width:1200px){
@@ -4425,16 +4433,6 @@
       open = item;
       if (open) { open.classList.add('is-open'); if (anchor) keepInPlace(open); }
     }
-    // where card i will sit once it alone is open: only an open card before it
-    // changes that (it will close), so subtract its extra width
-    function finalLeft(i){
-      const list = items(), it = list[i]; if (!it) return 0;
-      const closed = list.find(x => !x.classList.contains('is-open')) || it;
-      let left = it.offsetLeft;
-      const o = list.findIndex(x => x.classList.contains('is-open'));
-      if (o > -1 && o < i) left -= (list[o].offsetWidth - closed.offsetWidth);
-      return left;
-    }
 
     // go to puppy i: open it (desktop) and bring it into view
     function go(i){
@@ -4442,22 +4440,37 @@
       i = (i + list.length) % list.length;
       openIdx = i; mark(i);
       if (accordion()) {
+        // where it has to go is worked out BEFORE any card starts opening or
+        // closing (half-animated widths sent the strip too far — the open
+        // puppy ended up with its photo off screen), then one glide takes it
+        // there while it opens
+        const target = placeFor(i);
         set(list[i], false);
-        // the card's final place and width are known: glide there in one move,
-        // the open card centred
-        glideTo(finalLeft(i) - Math.max(0, (strip.clientWidth - openWidthPx()) / 2));
+        glideTo(target);
       } else {
         const it = list[i];
         glideTo(it.offsetLeft - (strip.clientWidth - it.offsetWidth) / 2);
       }
     }
-    function openWidthPx(){
-      // the open card = photo + the details panel (see the CSS rules for .is-open)
-      const lg = strip.closest('#litterGallery');
-      const probe = items().find(x => !x.classList.contains('is-open'));
-      const fy = probe ? probe.offsetWidth : (parseFloat(getComputedStyle(lg).getPropertyValue('--fy-w')) || 700);
-      const panel = window.innerWidth > 1200 ? Math.min(560, window.innerWidth * 0.42) : Math.min(420, window.innerWidth * 0.48);
-      return Math.min(strip.clientWidth, fy + panel);
+    // one rule for every way of choosing a puppy (a click on a card, the
+    // arrows, the dots, the ← → keys): the chosen puppy opens and slides to
+    // the page's left margin, where the title starts. Once it alone is open,
+    // every card before it is closed — exactly as wide as its photo — so its
+    // place follows from fixed sizes, never from a width that is mid-animation.
+    function placeFor(i){
+      const list = items(); if (!list.length) return 0;
+      const photo = list[0].querySelector('.ag-photo');
+      const w = (photo || list[0]).getBoundingClientRect().width;
+      // the step between two cards (photo + gap), measured on two closed ones
+      let step = w + GAP();
+      for (let k = 0; k < list.length - 1; k++) {
+        const a = list[k], b = list[k + 1];
+        if (!a.classList.contains('is-open') && Math.abs(a.getBoundingClientRect().width - w) < 1) { step = b.getBoundingClientRect().left - a.getBoundingClientRect().left; break; }
+      }
+      const padL = parseFloat(getComputedStyle(strip).paddingLeft) || 0;
+      const M = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--margin')) || 0;
+      const edge = strip.getBoundingClientRect().left;                     // the strip runs from the screen edge
+      return padL + i * step - (M - edge);
     }
 
     if (accordion()) {
@@ -4466,17 +4479,12 @@
       strip.addEventListener('click', (e) => {
         if (e.target.closest('.ag-inq')) return;
         const it = e.target.closest('.ag-item'); if (!it) return;
-        const i = items().indexOf(it);
-        if (it === open) return;
-        openIdx = i; mark(i);
-        set(it, true);
-        // if the open card would run past the right edge, glide it into view
-        setTimeout(() => {
-          const r = it.getBoundingClientRect(), sr = strip.getBoundingClientRect();
-          if (r.right > sr.right - 8) glideTo(strip.scrollLeft + (r.right - sr.right) + 24);
-          else if (r.left < sr.left) glideTo(strip.scrollLeft + (r.left - sr.left) - 24);
-        }, 620);
+        go(items().indexOf(it));                      // same as an arrow or a dot
       });
+      // the arrows sit under the strip, either side of the dots, so they never
+      // cover a photo or the puppy's text
+      if (prev) nav.prepend(prev);
+      if (next) nav.append(next);
     }
     // the dots follow the card nearest the middle while swiping (phones)
     if (!accordion()) {
